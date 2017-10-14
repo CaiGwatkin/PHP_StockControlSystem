@@ -95,7 +95,7 @@ class UserModel extends Model
     {
         if (!($stmt = $this->db->prepare(
             "SELECT id
-            FROM user_account
+            FROM user
             WHERE username = ?"
         ))) {
             throw new MySQLIStatementException('Error in prepare() in UserModel::checkLogin');
@@ -144,7 +144,7 @@ class UserModel extends Model
     {
         if (!($stmt = $this->db->prepare(
             "SELECT id, username, pwd
-            FROM user_account
+            FROM user
             WHERE id = ?;"
         ))) {
             throw new MySQLIStatementException('Error in prepare() in UserModel::load');
@@ -179,7 +179,7 @@ class UserModel extends Model
     {
         $username = mysqli_real_escape_string($this->db, $this->_username);
         if (!$result = $this->db->query(
-            "INSERT INTO user_account
+            "INSERT INTO user
             VALUES (
                 NULL,
                 '$username',
@@ -217,7 +217,7 @@ class UserModel extends Model
         if ($this->_username != 'admin') {
             $id = mysqli_real_escape_string($this->db, $this->_id);
             if (!$result = $this->db->query(
-                "DELETE FROM user_account
+                "DELETE FROM user
                 WHERE id = $id;"
             )) {
                 throw new MySQLQueryException('Error from DELETE in UserModel::delete');
@@ -239,7 +239,7 @@ class UserModel extends Model
         $id = mysqli_real_escape_string($this->db, $this->_id);
         $balance = mysqli_real_escape_string($this->db, $this->_balance);
         if (!$result = $this->db->query(
-            "UPDATE user_account
+            "UPDATE user
             SET balance = $balance
             WHERE id = $id;"
         )) {

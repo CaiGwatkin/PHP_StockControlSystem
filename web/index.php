@@ -27,9 +27,6 @@ define('DB_USER', 'root');
 define('DB_PASS', 'root');
 define('DB_NAME', 'cgwatkin_a3');
 
-setlocale(LC_ALL, 'en-NZ'); // Ensure consistent currency format
-// dirty workaround (should be set by user and checked later)
-
 $collection = new RouteCollection();
 
 $collection->attachRoute(
@@ -55,70 +52,10 @@ $collection->attachRoute(
 
 $collection->attachRoute(
     new Route(
-        '/account/logout', array(
-            '_controller' => 'cgwatkin\a3\controller\AccountController::logoutAction',
+        '/logout', array(
+            '_controller' => 'cgwatkin\a3\controller\UserController::logoutAction',
             'methods' => 'GET',
             'name' => 'accountLogout'
-        )
-    )
-);
-
-$collection->attachRoute(
-    new Route(
-        '/account/list', array(
-            '_controller' => 'cgwatkin\a3\controller\AccountController::listAction',
-            'methods' => 'GET',
-            'name' => 'accountList'
-        )
-    )
-);
-
-$collection->attachRoute(
-    new Route(
-        '/account/accessDenied', array(
-            '_controller' => 'cgwatkin\a3\controller\AccountController::accessDeniedAction',
-            'methods' => 'GET',
-            'name' => 'accountAccessDenied'
-        )
-    )
-);
-
-$collection->attachRoute(
-    new Route(
-        '/account/create', array(
-            '_controller' => 'cgwatkin\a3\controller\AccountController::createAction',
-            'methods' => array('GET', 'POST'),
-            'name' => 'accountCreate'
-        )
-    )
-);
-
-$collection->attachRoute(
-    new Route(
-        '/account/delete/:id', array(
-            '_controller' => 'cgwatkin\a3\controller\AccountController::deleteAction',
-            'methods' => 'GET',
-            'name' => 'accountDelete'
-        )
-    )
-);
-
-$collection->attachRoute(
-    new Route(
-        '/transfer/list', array(
-            '_controller' => 'cgwatkin\a3\controller\TransferController::listAction',
-            'methods' => 'GET',
-            'name' => 'transferList'
-        )
-    )
-);
-
-$collection->attachRoute(
-    new Route(
-        '/transfer/make', array(
-            '_controller' => 'cgwatkin\a3\controller\TransferController::makeAction',
-            'methods' => array('GET', 'POST'),
-            'name' => 'transferMake'
         )
     )
 );

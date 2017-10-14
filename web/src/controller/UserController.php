@@ -31,23 +31,23 @@ class UserController extends Controller
         try {
             if (isset($_POST['login'])) {
                 $username = $_POST['username'];
-                $account = (new UserModel())
+                $user = (new UserModel())
                     ->checkLogin($username, $_POST['password']);
-                if (!$account) {
-                    $view = new View('accountLogin');
+                if (!$user) {
+                    $view = new View('userLogin');
                     echo $view->addData('username', $username)
                         ->render();
                     return;
                 }
-                $username = $account->getUsername();
+                $username = $user->getUsername();
                 session_start();
-                $_SESSION['accountID'] = $account->getID();
+                $_SESSION['userID'] = $user->getID();
                 $_SESSION['username'] = $username;
                 $this->redirectAction('/welcome');
             } else if ($this->userIsLoggedIn()) {
                 $this->redirectAction('/welcome');
             } else {
-                $view = new View('accountLogin');
+                $view = new View('userLogin');
                 echo $view->render();
                 return;
             }
@@ -80,7 +80,7 @@ class UserController extends Controller
         session_start();
         session_destroy();
         try {
-            $view = new View('accountLoggedOut');
+            $view = new View('userLogout');
             echo $view->render();
         }
         catch (LoadTemplateException $ex) {

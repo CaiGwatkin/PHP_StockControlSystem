@@ -5,6 +5,11 @@
     <meta charset="UTF-8">
     <title>Account Management Ltd</title>
     <link rel="stylesheet" type="text/css" href="/static/styles/site.css">
+    <?php if ($scripts) {
+        foreach ($scripts as $script) {
+            include "../scripts/$script.js";
+        }
+    } ?>
 </head>
 <body>
     <div class="container">
