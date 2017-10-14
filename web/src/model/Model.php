@@ -60,9 +60,9 @@ class Model
             }
             // Add sample data, password is hashed on combination of ID and inputted password
             $pwd1 = password_hash('1'.'admin', PASSWORD_DEFAULT);
-            $pwd2 = password_hash('2'.'bob', PASSWORD_DEFAULT);
-            $pwd3 = password_hash('3'.'mary', PASSWORD_DEFAULT);
-            $pwd4 = password_hash('4'.'joe', PASSWORD_DEFAULT);
+            $pwd2 = password_hash('2'.'bobbyBOB', PASSWORD_DEFAULT);
+            $pwd3 = password_hash('3'.'maryMARY', PASSWORD_DEFAULT);
+            $pwd4 = password_hash('4'.'joeyJOEY', PASSWORD_DEFAULT);
             if(!$this->db->query(
                     "INSERT INTO user
                     VALUES (NULL,'admin','$pwd1','Admin'),
