@@ -44,9 +44,11 @@ class UserController extends Controller
                 $_SESSION['userID'] = $user->getID();
                 $_SESSION['username'] = $username;
                 $this->redirectAction('/welcome');
-            } else if ($this->userIsLoggedIn()) {
+            }
+            else if ($this->userIsLoggedIn()) {
                 $this->redirectAction('/welcome');
-            } else {
+            }
+            else {
                 $view = new View('userLogin');
                 echo $view->render();
                 return;
@@ -87,125 +89,189 @@ class UserController extends Controller
             $this->errorAction(self::$INTERNAL_SERVER_ERROR_MESSAGE, $ex->getMessage());
         }
     }
-    
-    /**
-     * User List action
-     *
-     * Lists accounts in system if user is admin.
-     */
-    public function listAction()
-    {
-        if ($this->userIsAdmin()) {
-            $page = $_GET['page']??1;
-            $limit = 10;
-            $offset = ($page - 1) * $limit;
-            try {
-                $accountCollection = new UserCollectionModel($limit, $offset);
-                $accounts = $accountCollection->getObjects();
-                $view = new View('accountList');
-                echo $view->addData('accounts', $accounts)
-                    ->addData('numUsers', $accountCollection->getNum())
-                    ->addData('page', $page)
-                    ->render();
-            }
-            catch (MySQLQueryException $ex) {
-                $this->errorAction(self::$INTERNAL_SERVER_ERROR_MESSAGE, 'MySQL error');
-                return;
-            }
-            catch (LoadTemplateException $ex) {
-                $this->errorAction(self::$INTERNAL_SERVER_ERROR_MESSAGE, $ex->getMessage());
-                return;
-            }
-        }
-        else {
-            $this->redirectAction('/accessDenied');
-        }
-    }
 
     /**
-     * User Create action
-     *
-     * If user is admin and request is not POST, display input for new account data.
-     * If user is admin and request is POST, try to create account and display new account.
+     * User Register action
      */
-    public function createAction() 
+    public function registerAction()
     {
-        if ($this->userIsAdmin()) {
-            if (isset($_POST['create'])) {
-                $username = $_POST['username'];
-                try {
-                    $account = new UserModel();
-                    $account->setUsername($username)
-                        ->setPassword($_POST['password'])
-                        ->save();
-                    if (!$account) {
-                        $this->errorAction(self::$INTERNAL_SERVER_ERROR_MESSAGE,
-                            'User creation failed. Did you enter a username?');
+        try {
+            if (!$this->userIsLoggedIn()) {
+                $view = new View('userRegister');
+                if (isset($_POST['register'])) {
+                    $name = $_POST['name'];
+                    $username = $_POST['username'];
+                    $password = $_POST['password'];
+                    $passwordRepeat = $_POST['passwordRepeat'];
+                    $formError = $this->checkRegistrationForm($username, $password, $passwordRepeat);
+                    if ($formError) {
+                        echo $view->addData('formError', $formError)
+                            ->addData('name', $name)
+                            ->addData('username', $username)
+                            ->addData('password', $password)
+                            ->addData('passwordRepeat', $passwordRepeat)
+                            ->render();
                         return;
                     }
-                    $view = new View('accountCreate');
-                    echo $view->addData('account', $account)
+                    $user = new UserModel();
+                    $user->setName($name)
+                        ->setUsername($username)
+                        ->setPassword($password)
+                        ->save();
+                    if (!$user) {
+                        $this->errorAction(self::$INTERNAL_SERVER_ERROR_MESSAGE, 'User registration failed');
+                        return;
+                    }
+                    session_start();
+                    $_SESSION['username'] = $user->getUsername();
+                    $_SESSION['userID'] = $user->getID();
+                    echo $view->addData('user', $user)
                         ->render();
-                }
-                catch (MySQLQueryException $ex) {
-                    $this->errorAction(self::$INTERNAL_SERVER_ERROR_MESSAGE, 'User name "'.$username.'" already exists.');
-                    return;
-                }
-                catch (LoadTemplateException $ex) {
-                    $this->errorAction(self::$INTERNAL_SERVER_ERROR_MESSAGE, $ex->getMessage());
-                    return;
+                } else {
+                    echo $view->render();
                 }
             }
             else {
-                try {
-                    $view = new View('accountCreate');
-                }
-                catch (LoadTemplateException $ex) {
-                    $this->errorAction(self::$INTERNAL_SERVER_ERROR_MESSAGE, $ex->getMessage());
-                    return;
-                }
-                echo $view->render();
+                $this->redirectAction('/welcome');
             }
         }
-        else {
-            $this->redirectAction('/accessDenied');
+        catch (MySQLDatabaseException $ex) {
+            $this->errorAction(self::$INTERNAL_SERVER_ERROR_MESSAGE, $ex->getMessage());
+            return;
+        }
+        catch (MySQLQueryException $ex) {
+            $this->errorAction(self::$INTERNAL_SERVER_ERROR_MESSAGE, $ex->getMessage());
+            return;
+        }
+        catch (MySQLIStatementException $ex) {
+            $this->errorAction(self::$INTERNAL_SERVER_ERROR_MESSAGE, $ex->getMessage());
+            return;
+        }
+        catch (LoadTemplateException $ex) {
+            $this->errorAction(self::$INTERNAL_SERVER_ERROR_MESSAGE, $ex->getMessage());
+            return;
         }
     }
 
     /**
-     * User Delete action
+     * Checks that registration form data is as expected.
      *
-     * @param int $id User id to be deleted
+     * @param string $username Username
+     * @param string $password Password
+     * @param string $passwordRepeat Repeated password
+     * @return null|string Description of registration form error, if one occurred.
+     * @throws MySQLIStatementException
      */
-    public function deleteAction($id)
+    private function checkRegistrationForm($username, $password, $passwordRepeat)
     {
-        if ($this->userIsAdmin()) {
-            try {
-                $account = (new UserModel())->load($id);
-                if (!$account) {
-                    $view = new View('accountDeleted');
-                    echo $view->addData('accountId', $id)
-                        ->render();
-                }
-                else {
-                    $account->delete();
-                    $view = new View('accountDeleted');
-                    echo $view->addData('accountExists', true)
-                        ->addData('accountId', $id)
-                        ->render();
-                }
-            }
-            catch (MySQLQueryException $ex) {
-                $this->errorAction(self::$INTERNAL_SERVER_ERROR_MESSAGE, $ex->getMessage());
-                return;
-            }
-            catch (LoadTemplateException $ex) {
-                $this->errorAction(self::$INTERNAL_SERVER_ERROR_MESSAGE, $ex->getMessage());
-                return;
+        if (!$this->usernameValid($username)) {
+            return 'Invalid username: must contain alphanumeric characters only';
+        }
+        try {
+            if ($this->usernameExists($username)) {
+                return 'Invalid username: username already exists';
             }
         }
-        else {
-            $this->redirectAction('/accessDenied');
+        catch (MySQLIStatementException $ex) {
+            throw $ex;
+        }
+        if (!$this->passwordValid($password)) {
+            return 'Invalid password: password must be between 7 and 15 alphanumeric characters (exclusive) and '.
+                'contain at least one uppercase letter (no special characters allowed)';
+        }
+        if (!$this->passwordsMatch($password, $passwordRepeat)) {
+            return 'Invalid password: passwords do not match';
+        }
+        return null;
+    }
+
+    /**
+     * Checks that username is valid.
+     *
+     * @param string $username Username
+     * @return bool True if username contains only alphanumeric characters.
+     */
+    private function usernameValid($username)
+    {
+        return ctype_alnum($username);
+    }
+
+    /**
+     * Checks whether username exists in database already.
+     *
+     * @param string $username Username
+     * @return bool True if username already exists in database.
+     * @throws MySQLIStatementException
+     */
+    private function usernameExists($username)
+    {
+        $userModel = new UserModel();
+        try {
+            return $userModel->usernameExists($username);
+        }
+        catch (MySQLIStatementException $ex) {
+            throw $ex;
         }
     }
+
+    /**
+     * Checks that password is valid.
+     *
+     * @param string $password Password
+     * @return bool True if password is valid.
+     */
+    private function passwordValid($password)
+    {
+        $length = strlen($password);
+        return $length > 7 && $length < 15 && preg_match('/[A-Z]/', $password) && ctype_alnum($password);
+    }
+
+    /**
+     * Checks that password and repeated password match.
+     *
+     * @param string $password Password
+     * @param string $passwordRepeat Repeated password
+     * @return bool True if passwords match exactly.
+     */
+    private function passwordsMatch($password, $passwordRepeat)
+    {
+        return $password == $passwordRepeat;
+    }
+
+//    /**
+//     * User Delete action
+//     *
+//     * @param int $id User id to be deleted
+//     */
+//    public function deleteAction($id)
+//    {
+//        if ($this->userIsAdmin()) {
+//            try {
+//                $account = (new UserModel())->load($id);
+//                if (!$account) {
+//                    $view = new View('accountDeleted');
+//                    echo $view->addData('accountId', $id)
+//                        ->render();
+//                }
+//                else {
+//                    $account->delete();
+//                    $view = new View('accountDeleted');
+//                    echo $view->addData('accountExists', true)
+//                        ->addData('accountId', $id)
+//                        ->render();
+//                }
+//            }
+//            catch (MySQLQueryException $ex) {
+//                $this->errorAction(self::$INTERNAL_SERVER_ERROR_MESSAGE, $ex->getMessage());
+//                return;
+//            }
+//            catch (LoadTemplateException $ex) {
+//                $this->errorAction(self::$INTERNAL_SERVER_ERROR_MESSAGE, $ex->getMessage());
+//                return;
+//            }
+//        }
+//        else {
+//            $this->redirectAction('/accessDenied');
+//        }
+//    }
 }

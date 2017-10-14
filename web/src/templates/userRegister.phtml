@@ -1,0 +1,48 @@
+<?php include "header.phtml" ?>
+<!-- Base code provided by Andrew Gilman <a.gilman@massey.ac.nz> -->
+<h1>Registration form</h1>
+<?php if ($user): ?>
+    <p>Thanks, <?= $user->getName() ?>, you have successfully registered.</p>
+    <?php include "buttonWelcome.phtml" ?>
+    <br>
+    <br>
+<?php else: ?>
+    <? echo $formError ? "<p>$formError</p>" : '' ?>
+    <form method="POST">
+        <table>
+            <tr>
+                <td><label>Name</label></td>
+                <td>
+                    <input name="name"
+                           placeholder="Name" value="<?= $name ?>" required>
+                </td>
+            </tr>
+            <tr>
+                <td><label>Username</label></td>
+                <td>
+                    <input name="username"
+                           placeholder="Username" value="<?= $username ?>" required>
+                </td>
+            </tr>
+            <tr>
+                <td><label>Password</label></td>
+                <td>
+                    <input name="password" type="password"
+                           placeholder="Password" value="<?= $password ?>" required>
+                </td>
+            </tr>
+            <tr>
+                <td><label>Repeat</label></td>
+                <td>
+                    <input name="passwordRepeat" type="password"
+                           placeholder="Password" value="<?= $passwordRepeat ?>" required>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><button name="register">Register</button></td>
+            </tr>
+        </table>
+    </form>
+<?php endif ?>
+<?php include "footer.phtml" ?>

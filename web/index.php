@@ -55,7 +55,17 @@ $collection->attachRoute(
         '/logout', array(
             '_controller' => 'cgwatkin\a3\controller\UserController::logoutAction',
             'methods' => 'GET',
-            'name' => 'accountLogout'
+            'name' => 'userLogout'
+        )
+    )
+);
+
+$collection->attachRoute(
+    new Route(
+        '/register', array(
+            '_controller' => 'cgwatkin\a3\controller\UserController::registerAction',
+            'methods' => array('GET', 'POST'),
+            'name' => 'userRegister'
         )
     )
 );

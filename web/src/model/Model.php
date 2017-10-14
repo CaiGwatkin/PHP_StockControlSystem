@@ -49,8 +49,9 @@ class Model
             $result = $this->db->query(
                     "CREATE TABLE user (
                         id int(8) unsigned NOT NULL UNIQUE AUTO_INCREMENT,
-                        username varchar(256) NOT NULL UNIQUE,
-                        pwd varchar(256) NOT NULL,
+                        username VARCHAR(256) NOT NULL UNIQUE,
+                        pwd VARCHAR(256) NOT NULL,
+                        name VARCHAR(256) NOT NULL,
                         PRIMARY KEY (id)
             );");
             if (!$result) {
@@ -64,13 +65,13 @@ class Model
             $pwd4 = password_hash('4'.'joe', PASSWORD_DEFAULT);
             if(!$this->db->query(
                     "INSERT INTO user
-                    VALUES (NULL,'admin','$pwd1'),
-                        (NULL,'Bob','$pwd2'),
-                        (NULL,'Mary','$pwd3'),
-                        (NULL,'Joe','$pwd4');"
+                    VALUES (NULL,'admin','$pwd1','Admin'),
+                        (NULL,'bob','$pwd2','Bob'),
+                        (NULL,'mary','$pwd3','Mary'),
+                        (NULL,'joe','$pwd4','Joe');"
             )) {
                 error_log($this->db->error);
-                throw new MySQLDatabaseException('Failed adding sample data to table: user_account');
+                throw new MySQLDatabaseException('Failed adding sample data to table: user');
             }
         }
 

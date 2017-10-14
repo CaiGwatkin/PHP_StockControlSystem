@@ -32,6 +32,11 @@ class UserModel extends Model
      * @var string User password.
      */
     private $_password;
+
+    /**
+     * @var string User's name.
+     */
+    private $_name;
     
     /**
      * @return int User ID
@@ -52,7 +57,7 @@ class UserModel extends Model
     }
 
     /**
-     * @return string User Name
+     * @return string Username
      */
     public function getUsername()
     {
@@ -60,7 +65,7 @@ class UserModel extends Model
     }
 
     /**
-     * @param string $_username User name
+     * @param string $_username Username
      *
      * @return UserModel $this
      */
@@ -80,11 +85,31 @@ class UserModel extends Model
         $this->_password = $password;
         return $this;
     }
+
+    /**
+     * @return string User's name
+     */
+    public function getName()
+    {
+        return $this->_name;
+    }
+
+    /**
+     * @param string $_name User's name
+     *
+     * @return UserModel $this
+     */
+    public function setName(string $_name)
+    {
+        $this->_name = $_name;
+
+        return $this;
+    }
     
     /**
      * Checks that login details are valid.
      *
-     * @param string $username The username for the account to be logged in.
+     * @param string $username The username for the user to be logged in.
      * @param string $password The password.
      *
      * @return $this UserModel
@@ -110,7 +135,7 @@ class UserModel extends Model
             throw new MySQLIStatementException('Error in get_result() in UserModel::checkLogin');
         }
         if ($result->num_rows == 0) {
-            throw new MySQLQueryException("No account found with username '$username' in UserModel::load");
+            throw new MySQLQueryException("No user found with username '$username' in UserModel::load");
         }
         $result = $result->fetch_assoc();
         try {
@@ -132,7 +157,7 @@ class UserModel extends Model
     }
 
     /**
-     * Loads account information from the database
+     * Loads user information from the database
      *
      * @param int $id User ID
      *
@@ -143,7 +168,7 @@ class UserModel extends Model
     public function load($id)
     {
         if (!($stmt = $this->db->prepare(
-            "SELECT id, username, pwd
+            "SELECT id, username, pwd, name
             FROM user
             WHERE id = ?;"
         ))) {
@@ -159,47 +184,33 @@ class UserModel extends Model
             throw new MySQLIStatementException('Error in get_result() in UserModel::load');
         }
         if ($result->num_rows == 0) {
-            throw new MySQLQueryException("No account found with id '$id' in UserModel::load");
+            throw new MySQLQueryException("No user found with id '$id' in UserModel::load");
         }
         $result = $result->fetch_assoc();
         return $this->setID($result['id'])
             ->setUsername($result['username'])
-            ->setPassword($result['pwd']);
+            ->setPassword($result['pwd'])
+            ->setName($result['name']);
     }
 
     /**
-     * Saves account information to the database
+     * Saves user information to the database
      *
-     * Should only be called after account model object's username and password has been set.
+     * Should only be called after user model object's username, password, and name has been set.
 
      * @return $this UserModel
+     * @throws MySQLIStatementException
      * @throws MySQLQueryException
      */
     public function save()
     {
-        $username = mysqli_real_escape_string($this->db, $this->_username);
-        if (!$result = $this->db->query(
-            "INSERT INTO user
-            VALUES (
-                NULL,
-                '$username',
-                'temp',
-                0.00
-            );"
-        )) {
-            throw new MySQLQueryException('Error from "INSERT INTO user_account" in UserModel::save');
-        }
-        $this->_id = $this->db->insert_id;
-        $password = mysqli_real_escape_string($this->db, $this->_password);
-        if (!$result = $this->db->query(
-            "UPDATE user_account
-            SET pwd = '".password_hash($this->_id.$password, PASSWORD_DEFAULT)."'
-            WHERE id = $this->_id"
-        )) {
-            throw new MySQLQueryException('Error from "UPDATE user_account SET" pwd in UserModel::save');
-        }
         try {
-            return $this->load($this->_id);
+            return $this->insert()
+                ->updatePassword()
+                ->load($this->_id);
+        }
+        catch (MySQLIStatementException $ex) {
+            throw $ex;
         }
         catch (MySQLQueryException $ex) {
             throw $ex;
@@ -207,75 +218,113 @@ class UserModel extends Model
     }
 
     /**
-     * Deletes account from the database
-
+     * Insert new user into database.
+     *
      * @return $this UserModel
-     * @throws MySQLQueryException
+     * @throws MySQLIStatementException
      */
-    public function delete()
+    private function insert()
     {
-        if ($this->_username != 'admin') {
-            $id = mysqli_real_escape_string($this->db, $this->_id);
-            if (!$result = $this->db->query(
-                "DELETE FROM user
-                WHERE id = $id;"
-            )) {
-                throw new MySQLQueryException('Error from DELETE in UserModel::delete');
-            }
+        if (!($stmt = $this->db->prepare(
+            "INSERT INTO user
+            VALUES (
+                NULL,
+                ?,
+                ?,
+                ?
+            );"
+        ))) {
+            throw new MySQLIStatementException('Error in prepare() in UserModel::insert');
         }
-        else {
-            throw new MySQLQueryException('Cannot delete admin account');
+        if (!$stmt->bind_param('sss', $this->_username, $this->_password, $this->_name)) {
+            throw new MySQLIStatementException('Error in bind_param() in UserModel::insert');
         }
-
+        if (!$stmt->execute()) {
+            throw new MySQLIStatementException('Error in execute() in UserModel::insert');
+        }
         return $this;
     }
 
     /**
-     * Update balance value for account.
+     * Generates and sets new password for user.
      *
+     * @return $this UserModel
+     * @throws MySQLIStatementException
      * @throws MySQLQueryException
      */
-    private function updateBalance() {
-        $id = mysqli_real_escape_string($this->db, $this->_id);
-        $balance = mysqli_real_escape_string($this->db, $this->_balance);
-        if (!$result = $this->db->query(
+    private function updatePassword()
+    {
+        if (!($stmt = $this->db->prepare(
             "UPDATE user
-            SET balance = $balance
-            WHERE id = $id;"
-        )) {
-            throw new MySQLQueryException('Error from UPDATE in UserModel::addToBalance');
+            SET pwd = ?
+            WHERE id = ?"
+        ))) {
+            throw new MySQLIStatementException('Error in prepare() in UserModel::updatePassword');
         }
+        $this->_id = $this->db->insert_id;
+        $password = password_hash($this->_id.$this->_password, PASSWORD_DEFAULT);
+        if (!($stmt->bind_param('si', $password, $this->_id))) {
+            throw new MySQLIStatementException('Error in bind_param() in UserModel::updatePassword');
+        }
+        if (!$stmt->execute()) {
+            throw new MySQLQueryException('Error in execute() in UserModel::updatePassword');
+        }
+        return $this;
     }
 
     /**
-     * Add amount to account balance.
+     * Checks if username exists in database.
      *
-     * @param $amount
-     * @throws MySQLQueryException
+     * @param string $username Username
+     *
+     * @return bool True if username exists in database.
+     * @throws MySQLIStatementException
      */
-    public function addToBalance($amount) {
-        $this->_balance += $amount;
-        try {
-            $this->updateBalance();
+    public function usernameExists($username)
+    {
+        if (!($stmt = $this->db->prepare(
+            "SELECT id
+            FROM user
+            WHERE username = ?;"
+        ))) {
+            throw new MySQLIStatementException('Error in prepare() in UserModel::usernameExists');
         }
-        catch (MySQLQueryException $ex) {
-            throw $ex;
+        if (!($stmt->bind_param('s', $username))) {
+            throw new MySQLIStatementException('Error in bind_param() in UserModel::usernameExists');
         }
+        if (!$stmt->execute()) {
+            throw new MySQLIStatementException('Error in execute() in UserModel::usernameExists');
+        }
+        if (!($result = $stmt->get_result())) {
+            throw new MySQLIStatementException('Error in get_result() in UserModel::usernameExists');
+        }
+        if ($result->num_rows != 0) {
+            return true;
+        }
+        return false;
     }
 
-    /**
-     * Subtract amount from account balance.
-     *
-     * @param $amount
-     * @throws MySQLQueryException
-     */
-    public function subtractFromBalance($amount) {
-        $this->_balance -= $amount;
-        try {
-            $this->updateBalance();
-        }
-        catch (MySQLQueryException $ex) {
-            throw $ex;
-        }
-    }
+//    /**
+//     * Deletes user from the database
+//
+//     * @return $this UserModel
+//     * @throws MySQLQueryException
+//     */
+//    public function delete()
+//    {
+//        if ($this->_username != 'admin') {
+//            $id = mysqli_real_escape_string($this->db, $this->_id);
+//            if (!$result = $this->db->query(
+//                "DELETE FROM user
+//                WHERE id = $id;"
+//            )) {
+//                throw new MySQLQueryException('Error from DELETE in UserModel::delete');
+//            }
+//        }
+//        else {
+//            throw new MySQLQueryException('Cannot delete admin user');
+//        }
+//
+//        return $this;
+//    }
 }
