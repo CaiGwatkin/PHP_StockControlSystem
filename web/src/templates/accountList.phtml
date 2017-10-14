@@ -1,0 +1,39 @@
+<?php include "header.phtml" ?>
+<!-- Base code provided by Andrew Gilman <a.gilman@massey.ac.nz> -->
+<h1>Accounts</h1>
+<p>The accounts are:</p>
+<table class="list">
+    <tr class="column_header">
+        <th class="id_num">ID</th>
+        <th>Username</th>
+        <th>Balance</th>
+        <th class="action">Action</th>
+    </tr>
+    <?php foreach ($accounts as $account) { ?>
+    <tr class="data_column">
+        <td class="id_num"><?= $account->getID() ?></td>
+        <td><?= $account->getUsername() ?></td>
+        <td class="currency">$<?= number_format($account->getBalance(), 2) ?></td>
+        <td class="action">
+            <button onclick="document.location.href='/account/delete/<?= $account->getID() ?>'">Delete</button>
+        </td>
+    </tr>
+    <?php } ?>
+</table>
+<br>
+<?php
+if ($page > 1) {
+    $previousPage = $page - 1;
+    include "buttonListPrevious.phtml";
+}
+?>
+<?php
+if ($numAccounts == 10) {
+    $nextPage = $page + 1;
+    include "buttonListNext.phtml";
+}
+?>
+<br>
+<br>
+<?php include "buttonAccountCreate.phtml" ?>
+<?php include "footer.phtml" ?>
