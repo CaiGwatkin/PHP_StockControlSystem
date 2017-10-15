@@ -34,6 +34,22 @@ class Controller
         die();
     }
 
+    public function welcomeAction() {
+        try {
+            if ($this->userIsLoggedIn()) {
+                $view = new View('welcome');
+                echo $view->addData('name', $_SESSION['name'])
+                    ->render();
+            } else {
+                $this->redirectAction('/login');
+            }
+        }
+        catch (LoadTemplateException $ex) {
+            $this->errorAction(self::$INTERNAL_SERVER_ERROR_MESSAGE, $ex->getMessage());
+            return;
+        }
+    }
+
     /**
      * Error action
      *
@@ -93,6 +109,6 @@ class Controller
     function userIsLoggedIn()
     {
         session_start();
-        return isset($_SESSION['username']);
+        return isset($_SESSION['userID']);
     }
 }

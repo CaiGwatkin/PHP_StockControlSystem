@@ -38,10 +38,9 @@ $collection = new RouteCollection();
 $collection->attachRoute(
     new Route(
         '/', array(
-            '_controller' => 'cgwatkin\a3\controller\Controller::redirectAction',
+            '_controller' => 'cgwatkin\a3\controller\Controller::welcomeAction',
             'methods' => 'GET',
-            'name' => 'indexRedirect',
-            'parameters' => array('url' => '/login')
+            'name' => 'welcome'
         )
     )
 );

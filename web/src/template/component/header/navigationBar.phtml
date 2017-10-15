@@ -1,0 +1,12 @@
+<?php include HEADER_COMPONENT."default.phtml" ?>
+<div class="navigation_bar">
+    <ul>
+        <li><a <?= $_SERVER['REQUEST_URI'] == '/' ? 'class="active"' : "" ?>
+               href="http://<?= $_SERVER['HTTP_HOST'] ?>">Welcome</a></li>
+        <li><a <?= $_SERVER['REQUEST_URI'] == '/search' ? 'class="active"' : "" ?>
+               href="http://<?= $_SERVER['HTTP_HOST'] ?>/search">Search</a></li>
+        <li class="logout"><a href="http://<?= $_SERVER['HTTP_HOST'] ?>/logout">Logout</a></li>
+    </ul>
+</div>
+<div class="clear"></div>
+<br>

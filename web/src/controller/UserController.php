@@ -41,12 +41,13 @@ class UserController extends Controller
                 }
                 $username = $user->getUsername();
                 session_start();
-                $_SESSION['userID'] = $user->getID();
+                $_SESSION['name'] = $user->getName();
                 $_SESSION['username'] = $username;
-                $this->redirectAction('/welcome');
+                $_SESSION['userID'] = $user->getID();
+                $this->redirectAction('/');
             }
             else if ($this->userIsLoggedIn()) {
-                $this->redirectAction('/welcome');
+                $this->redirectAction('/');
             }
             else {
                 $view = new View('userLogin');
@@ -81,13 +82,7 @@ class UserController extends Controller
     {
         session_start();
         session_destroy();
-        try {
-            $view = new View('userLogout');
-            echo $view->render();
-        }
-        catch (LoadTemplateException $ex) {
-            $this->errorAction(self::$INTERNAL_SERVER_ERROR_MESSAGE, $ex->getMessage());
-        }
+        $this->redirectAction('/login');
     }
 
     /**
