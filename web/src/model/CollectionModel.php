@@ -4,6 +4,7 @@
  */
 namespace cgwatkin\a3\model;
 
+use cgwatkin\a3\exception\MySQLIStatementException;
 use cgwatkin\a3\exception\MySQLQueryException;
 
 /**
@@ -64,6 +65,7 @@ class CollectionModel extends Model
      * @param $offsetClause
      * @param $orderClause
      * @param $whereClause
+     * @throws MySQLIStatementException
      * @throws MySQLQueryException
      */
     private function loadIDs(string $table, $limitClause, $offsetClause,
@@ -81,7 +83,7 @@ class CollectionModel extends Model
             $limitClause 
             $offsetClause;"
         )) {
-            throw new MySQLQueryException('Error from SELECT in CollectionModel::__construct');
+            throw new MySQLQueryException('Error from select in CollectionModel::__construct');
         }
         $this->_ids = array_column($result->fetch_all(), 0);
         $this->_num = $result->num_rows;

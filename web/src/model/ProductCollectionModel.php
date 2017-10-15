@@ -7,36 +7,35 @@ namespace cgwatkin\a3\model;
 use cgwatkin\a3\exception\MySQLQueryException;
 
 /**
- * Class TransferCollectionModel
+ * Class ProductCollectionModel
  *
  * Base code provided by Andrew Gilman <a.gilman@massey.ac.nz>
  *
  * @package cgwatkin/a3
  * @author  Cai Gwatkin <caigwatkin@gmail.com>
  */
-class TransferCollectionModel extends CollectionModel
+class ProductCollectionModel extends CollectionModel
 {
     /**
-     * TransferCollectionModel constructor.
+     * ProductCollectionModel constructor.
      *
-     * Sends 'transfer' as table to parent constructor.
+     * Sends 'product' as table to parent constructor.
      *
      * @param int $limit Limit of number of rows to be returned.
      * @param int $offset Offset from zero'th row.
-     * @param int $accountID ID of account for transactions to be loaded from.
      *
      * @throws MySQLQueryException
      */
-    function __construct($accountID, $limit = null, $offset = null)
+    function __construct(/*$category = null,*/ $limit = null, $offset = null)
     {
-        $table = 'transfer';
+        $table = 'product';
         $limitClause = $limit ? "LIMIT $limit" : null;
         $offsetClause = $offset ? "OFFSET $offset" : null;
-        $orderClause = 'ORDER BY datetimeOf DESC';
-        $whereClause = "WHERE fromAccount = $accountID OR toAccount = $accountID";
+        $orderClause = 'ORDER BY sku ASC';
+//        $whereClause =  $category ? "WHERE category = $category" : null;
         try {
-            parent::__construct(TransferModel::class,$table, $limitClause, $offsetClause,
-                $orderClause, $whereClause);
+            parent::__construct(ProductModel::class, $table, $limitClause, $offsetClause,
+                $orderClause);
         }
         catch (MySQLQueryException $ex) {
             throw $ex;
