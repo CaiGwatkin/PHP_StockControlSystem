@@ -9,8 +9,6 @@ use cgwatkin\a3\exception\MySQLDatabaseException;
 use cgwatkin\a3\exception\MySQLIStatementException;
 use cgwatkin\a3\exception\MySQLQueryException;
 use cgwatkin\a3\model\UserModel;
-use cgwatkin\a3\model\UserCollectionModel;
-use cgwatkin\a3\model\Model;
 use cgwatkin\a3\view\View;
 
 /**
@@ -50,9 +48,7 @@ class UserController extends Controller
                 $this->redirectAction('/');
             }
             else {
-                $view = new View('userLogin');
-                echo $view->render();
-                return;
+                echo (new View('userLogin'))->render();
             }
         }
         catch (MySQLDatabaseException $ex) {
@@ -153,11 +149,21 @@ class UserController extends Controller
     /**
      * Verify Registration Form action
      *
-     * Handles post from AJAX on user registration page.
+     * Handles POST from AJAX on user registration page.
      */
     public function verifyRegistrationFormAction() {
-        if (isset($_POST['username'])) {
-            echo $this->usernameExists($_POST['username']) ? 'duplicate' : 'unique' ;
+        try {
+            if (isset($_POST['username'])) {
+                echo $this->usernameExists($_POST['username']) ? 'duplicate' : 'unique';
+            }
+        }
+        catch (MySQLDatabaseException $ex) {
+            error_log(self::$INTERNAL_SERVER_ERROR_MESSAGE.': '.$ex->getMessage());
+            echo null;
+        }
+        catch (MySQLIStatementException $ex) {
+            error_log(self::$INTERNAL_SERVER_ERROR_MESSAGE.': '.$ex->getMessage());
+            echo null;
         }
     }
 
@@ -168,29 +174,33 @@ class UserController extends Controller
      * @param string $password Password
      * @param string $passwordRepeat Repeated password
      * @return null|string Description of registration form error, if one occurred.
+     * @throws MySQLDatabaseException
      * @throws MySQLIStatementException
      */
     private function checkRegistrationForm($username, $password, $passwordRepeat)
     {
-        if (!$this->usernameValid($username)) {
-            return 'Invalid username: must contain alphanumeric characters only';
-        }
         try {
+            if (!$this->usernameValid($username)) {
+                return 'Invalid username: must contain alphanumeric characters only';
+            }
             if ($this->usernameExists($username)) {
                 return 'Invalid username: username already exists';
             }
+            if (!$this->passwordValid($password)) {
+                return 'Invalid password: password must be between 7 and 15 (exclusive) alphanumeric characters and '.
+                    'contain at least one uppercase letter (no special characters allowed)';
+            }
+            if (!$this->passwordsMatch($password, $passwordRepeat)) {
+                return 'Invalid password: passwords do not match';
+            }
+            return null;
+        }
+        catch (MySQLDatabaseException $ex) {
+            throw $ex;
         }
         catch (MySQLIStatementException $ex) {
             throw $ex;
         }
-        if (!$this->passwordValid($password)) {
-            return 'Invalid password: password must be between 7 and 15 (exclusive) alphanumeric characters and '.
-                'contain at least one uppercase letter (no special characters allowed)';
-        }
-        if (!$this->passwordsMatch($password, $passwordRepeat)) {
-            return 'Invalid password: passwords do not match';
-        }
-        return null;
     }
 
     /**
@@ -209,13 +219,16 @@ class UserController extends Controller
      *
      * @param string $username Username
      * @return bool True if username already exists in database.
+     * @throws MySQLDatabaseException
      * @throws MySQLIStatementException
      */
     private function usernameExists($username)
     {
-        $userModel = new UserModel();
         try {
-            return $userModel->usernameExists($username);
+            return (new UserModel())->usernameExists($username);
+        }
+        catch (MySQLDatabaseException $ex) {
+            throw $ex;
         }
         catch (MySQLIStatementException $ex) {
             throw $ex;
@@ -245,41 +258,4 @@ class UserController extends Controller
     {
         return $password == $passwordRepeat;
     }
-
-//    /**
-//     * User Delete action
-//     *
-//     * @param int $id User id to be deleted
-//     */
-//    public function deleteAction($id)
-//    {
-//        if ($this->userIsAdmin()) {
-//            try {
-//                $account = (new UserModel())->load($id);
-//                if (!$account) {
-//                    $view = new View('accountDeleted');
-//                    echo $view->addData('accountId', $id)
-//                        ->render();
-//                }
-//                else {
-//                    $account->delete();
-//                    $view = new View('accountDeleted');
-//                    echo $view->addData('accountExists', true)
-//                        ->addData('accountId', $id)
-//                        ->render();
-//                }
-//            }
-//            catch (MySQLQueryException $ex) {
-//                $this->errorAction(self::$INTERNAL_SERVER_ERROR_MESSAGE, $ex->getMessage());
-//                return;
-//            }
-//            catch (LoadTemplateException $ex) {
-//                $this->errorAction(self::$INTERNAL_SERVER_ERROR_MESSAGE, $ex->getMessage());
-//                return;
-//            }
-//        }
-//        else {
-//            $this->redirectAction('/accessDenied');
-//        }
-//    }
 }

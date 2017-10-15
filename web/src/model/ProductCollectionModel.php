@@ -21,21 +21,21 @@ class ProductCollectionModel extends CollectionModel
      *
      * Sends 'product' as table to parent constructor.
      *
-     * @param int $limit Limit of number of rows to be returned.
-     * @param int $offset Offset from zero'th row.
+     * @param string $needle Needle of name to be filtered on.
+     * @param string $haystack The column to find needle in.
+     * @param string $orderBy Column to order results by.
+     * @param string $sort ASC or DESC.
      *
      * @throws MySQLQueryException
      */
-    function __construct(/*$category = null,*/ $limit = null, $offset = null)
+    function __construct($needle = null, $haystack = null, $orderBy = null, $sort = 'ASC')
     {
         $table = 'product';
-        $limitClause = $limit ? "LIMIT $limit" : null;
-        $offsetClause = $offset ? "OFFSET $offset" : null;
-        $orderClause = 'ORDER BY sku ASC';
-//        $whereClause =  $category ? "WHERE category = $category" : null;
+        $orderClause = $orderBy ? "ORDER BY $orderBy $sort" : null;
+        $whereClause =  $needle && $haystack ? "WHERE INSTR($haystack, '$needle')" : null;
         try {
-            parent::__construct(ProductModel::class, $table, $limitClause, $offsetClause,
-                $orderClause);
+            parent::__construct(ProductModel::class, $table, null, null,
+                $orderClause, $whereClause);
         }
         catch (MySQLQueryException $ex) {
             throw $ex;

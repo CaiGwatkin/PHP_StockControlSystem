@@ -89,6 +89,16 @@ $collection->attachRoute(
     )
 );
 
+$collection->attachRoute(
+    new Route(
+        '/search', array(
+            '_controller' => 'cgwatkin\a3\controller\ProductController::searchAction',
+            'methods' => 'GET',
+            'name' => 'productSearch'
+        )
+    )
+);
+
 
 $router = new Router($collection);
 $router->setBasePath('/');

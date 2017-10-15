@@ -28,11 +28,6 @@ class CollectionModel extends Model
     private $_class;
 
     /**
-     * @var int Number of models in collection.
-     */
-    private $_num;
-
-    /**
      * CollectionModel constructor.
      *
      * @param callable $class The class to be generated as a collection.
@@ -86,15 +81,6 @@ class CollectionModel extends Model
             throw new MySQLQueryException('Error from select in CollectionModel::__construct');
         }
         $this->_ids = array_column($result->fetch_all(), 0);
-        $this->_num = $result->num_rows;
-    }
-
-    /**
-     * @return int Number of models in collection.
-     */
-    public function getNum()
-    {
-        return $this->_num;
     }
 
     /**

@@ -303,28 +303,4 @@ class UserModel extends Model
         }
         return false;
     }
-
-//    /**
-//     * Deletes user from the database
-//
-//     * @return $this UserModel
-//     * @throws MySQLQueryException
-//     */
-//    public function delete()
-//    {
-//        if ($this->_username != 'admin') {
-//            $id = mysqli_real_escape_string($this->db, $this->_id);
-//            if (!$result = $this->db->query(
-//                "DELETE FROM user
-//                WHERE id = $id;"
-//            )) {
-//                throw new MySQLQueryException('Error from DELETE in UserModel::delete');
-//            }
-//        }
-//        else {
-//            throw new MySQLQueryException('Cannot delete admin user');
-//        }
-//
-//        return $this;
-//    }
 }
