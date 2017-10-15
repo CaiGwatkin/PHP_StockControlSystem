@@ -23,11 +23,16 @@ body {
 }
 
 #title {
+    padding-top: 30px;
     text-align: center;
 }
 
 .clear {
     clear: both;
+}
+
+button, input {
+    padding: 8px 16px;
 }
 
 /***********************************************************************************************************************
@@ -80,7 +85,8 @@ table {
 }
 
 th, td {
-    padding: 15px;
+    padding-right: 50px;
+    padding-bottom: 5px;
     text-align: left;
 }
 

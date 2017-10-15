@@ -129,7 +129,7 @@ class UserController extends Controller
                 }
             }
             else {
-                $this->redirectAction('/welcome');
+                $this->redirectAction('/');
             }
         }
         catch (MySQLDatabaseException $ex) {
