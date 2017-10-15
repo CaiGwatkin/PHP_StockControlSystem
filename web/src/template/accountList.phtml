@@ -1,4 +1,4 @@
-<?php include "header.phtml" ?>
+<?php include HEADER_COMPONENT."default.phtml" ?>
 <h1>Accounts</h1>
 <p>The accounts are:</p>
 <table class="list">
@@ -23,16 +23,16 @@
 <?php
 if ($page > 1) {
     $previousPage = $page - 1;
-    include "buttonListPrevious.phtml";
+    include BUTTON_COMPONENT."listPrevious.phtml";
 }
 ?>
 <?php
 if ($numAccounts == 10) {
     $nextPage = $page + 1;
-    include "buttonListNext.phtml";
+    include BUTTON_COMPONENT."listNext.phtml";
 }
 ?>
 <br>
 <br>
-<?php include "buttonUserRegister.phtml" ?>
-<?php include "footer.phtml" ?>
+<?php include BUTTON_COMPONENT."userRegister.phtml" ?>
+<?php include FOOTER_COMPONENT."default.phtml" ?>

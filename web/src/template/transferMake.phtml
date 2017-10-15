@@ -1,9 +1,9 @@
-<?php include "header.phtml" ?>
+<?php include HEADER_COMPONENT."default.phtml" ?>
 <h1>Make transfer from <?= $username ?>'s account</h1>
 <?php if ($transfer): ?>
     <p>Transfer of $<?= number_format($transfer->getValueOf(), 2) ?> to account
         <?= $transfer->getToAccountID() ?> was successful.</p>
-    <?php include "buttonTransferMake.phtml" ?>
+    <?php include BUTTON_COMPONENT."transferMake.phtml" ?>
     <br>
     <br>
 <?php else: ?>
@@ -36,5 +36,5 @@
         </table>
     </form>
 <?php endif ?>
-<?php include "buttonTransferList.phtml" ?>
-<?php include "footer.phtml" ?>
+<?php include BUTTON_COMPONENT."transferList.phtml" ?>
+<?php include FOOTER_COMPONENT."default.phtml" ?>

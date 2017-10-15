@@ -9,8 +9,8 @@ use cgwatkin\a3\exception\LoadTemplateException;
 /**
  * Class View
  *
- * A wrapper for the view templates.
- * Limits the accessible scope available to phtml templates.
+ * A wrapper for the view template.
+ * Limits the accessible scope available to phtml template.
  *
  * Base code provided by Andrew Gilman <a.gilman@massey.ac.nz>
  *
@@ -31,12 +31,13 @@ class View
     protected $data = array();
 
     public function __construct($template) {
-        $file =  APP_ROOT . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'templates' . DIRECTORY_SEPARATOR . $template . '.phtml';
+        $file =  APP_ROOT.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'template'.DIRECTORY_SEPARATOR
+            .$template.'.phtml';
 
         if (file_exists($file)) {
             $this->template = $file;
         } else {
-            throw new LoadTemplateException('Template ' . $template . ' not found');
+            throw new LoadTemplateException('Template '.$template.' not found');
         }
     }
 

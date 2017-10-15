@@ -1,8 +1,8 @@
-<?php include "header.phtml" ?>
+<?php include HEADER_COMPONENT."default.phtml" ?>
 <h1>Registration form</h1>
 <?php if ($user): ?>
     <p>Thanks, <?= $user->getName() ?>, you have successfully registered.</p>
-    <?php include "buttonWelcome.phtml" ?>
+    <?php include "./component/button/welcome.phtml" ?>
     <br>
     <br>
 <?php else: ?>
@@ -49,4 +49,4 @@
     </form>
     <p id="error_p"></p>
 <?php endif ?>
-<?php include "footer.phtml" ?>
+<?php include FOOTER_COMPONENT."default.phtml" ?>
