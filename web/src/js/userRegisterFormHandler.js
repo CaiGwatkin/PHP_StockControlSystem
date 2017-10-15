@@ -16,36 +16,35 @@ $(document).ready(function () {
         passwordRepeatAlertTD = $("#passwordRepeat_alert");
 
     usernameInput.keyup(function () {
-
-        checkUsernameValid(usernameInput, usernameAlertTD);
-        checkUsernameUnique(usernameInput, usernameAlertTD);
+        usernameAlertTD.html(checkUsernameValid(usernameInput));
+        if (usernameAlertTD.html() === "") {
+            checkUsernameUnique(usernameInput, usernameAlertTD);
+        }
     });
 
     passwordInput.keyup(function () {
-
-        checkPasswordValid(passwordInput, passwordAlertTD);
+        passwordAlertTD.html(checkPasswordValid(passwordInput));
         if (passwordRepeatAlertTD.html() !== "") {
-            checkPasswordsMatch(passwordInput, passwordRepeatInput, passwordRepeatAlertTD);
+            passwordRepeatAlertTD.html(checkPasswordsMatch(passwordInput, passwordRepeatInput));
         }
     });
 
     passwordRepeatInput.focusout(function () {
-
-        checkPasswordsMatch(passwordInput, passwordRepeatInput, passwordRepeatAlertTD);
+        passwordRepeatAlertTD.html(checkPasswordsMatch(passwordInput, passwordRepeatInput));
     });
 
     passwordRepeatInput.focusin(function () {
-       passwordRepeatAlertTD.html("");
+        passwordRepeatAlertTD.html("");
     });
 });
 
 /**
  * Checks that the username is valid.
  * 
- * @param usernameInput The username HTML input element.
- * @param usernameAlertTD The username alert HTML td element.
+ * @param usernameInput The username HTML input element
+ * @returns {string} The message to be displayed.
  */
-function checkUsernameValid(usernameInput, usernameAlertTD) {
+function checkUsernameValid(usernameInput) {
 
     var username = usernameInput.val(),
         message;
@@ -55,7 +54,7 @@ function checkUsernameValid(usernameInput, usernameAlertTD) {
     else {
         message = "";
     }
-    usernameAlertTD.html(message);
+    return message;
 }
 
 
@@ -86,9 +85,9 @@ function checkUsernameUnique(usernameInput, usernameAlertTD) {
  * Checks that the password is valid.
  *
  * @param passwordInput The password HTML input element.
- * @param passwordAlertTD The password alert HTML td element.
+ * @returns {string} The message to be displayed.
  */
-function checkPasswordValid(passwordInput, passwordAlertTD) {
+function checkPasswordValid(passwordInput) {
 
     var password = passwordInput.val(),
         length = password.length,
@@ -100,7 +99,7 @@ function checkPasswordValid(passwordInput, passwordAlertTD) {
         message = "Invalid password: password must be between 7 and 15 (exclusive) alphanumeric characters and "+
             "contain at least one uppercase letter (no special characters allowed)";
     }
-    passwordAlertTD.html(message);
+    return message;
 }
 
 
@@ -109,9 +108,9 @@ function checkPasswordValid(passwordInput, passwordAlertTD) {
  *
  * @param passwordInput The password HTML input element.
  * @param passwordRepeatInput The password repeat HTML input element.
- * @param passwordRepeatAlertTD The password repeat alert HTML td element.
+ * @returns {string} The message to be displayed.
  */
-function checkPasswordsMatch(passwordInput, passwordRepeatInput, passwordRepeatAlertTD) {
+function checkPasswordsMatch(passwordInput, passwordRepeatInput) {
 
     var message;
     if (passwordInput.val() === passwordRepeatInput.val()) {
@@ -120,7 +119,7 @@ function checkPasswordsMatch(passwordInput, passwordRepeatInput, passwordRepeatA
     else {
         message = "Invalid password: passwords do not match";
     }
-    passwordRepeatAlertTD.html(message);
+    return message;
 }
 
 /**
