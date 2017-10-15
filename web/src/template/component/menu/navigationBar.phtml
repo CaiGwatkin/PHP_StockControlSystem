@@ -1,4 +1,5 @@
 <?php include HEADER_COMPONENT."default.phtml" ?>
+<?php include IMAGE_COMPONENT."logo.phtml"; ?>
 <div class="navigation_bar">
     <ul>
         <li><a <?= $_SERVER['REQUEST_URI'] == '/' ? 'class="active"' : "" ?>
@@ -8,4 +9,3 @@
         <li class="logout"><a href="http://<?= $_SERVER['HTTP_HOST'] ?>/logout">Logout</a></li>
     </ul>
 </div>
-<div class="clear"></div>
