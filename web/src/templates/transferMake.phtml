@@ -1,5 +1,4 @@
 <?php include "header.phtml" ?>
-<!-- Base code provided by Andrew Gilman <a.gilman@massey.ac.nz> -->
 <h1>Make transfer from <?= $username ?>'s account</h1>
 <?php if ($transfer): ?>
     <p>Transfer of $<?= number_format($transfer->getValueOf(), 2) ?> to account
