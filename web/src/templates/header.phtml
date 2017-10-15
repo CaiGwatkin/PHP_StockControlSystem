@@ -5,10 +5,13 @@
     <meta charset="UTF-8">
     <title>Account Management Ltd</title>
     <link rel="stylesheet" type="text/css" href="/static/styles/site.css">
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+            integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+            crossorigin="anonymous"></script>
     <?php if ($scripts) {
-        foreach ($scripts as $script) {
-            include "../scripts/$script.js";
-        }
+        foreach ($scripts as $script) { ?>
+            <script type="text/javascript" src="/src/js/<?= $script ?>.js"></script>
+        <?php }
     } ?>
 </head>
 <body>

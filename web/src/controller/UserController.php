@@ -110,6 +110,7 @@ class UserController extends Controller
                             ->addData('username', $username)
                             ->addData('password', $password)
                             ->addData('passwordRepeat', $passwordRepeat)
+                            ->addData('scripts', array('userRegisterFormHandler'))
                             ->render();
                         return;
                     }
@@ -128,7 +129,8 @@ class UserController extends Controller
                     echo $view->addData('user', $user)
                         ->render();
                 } else {
-                    echo $view->render();
+                    echo $view->addData('scripts', array('userRegisterFormHandler'))
+                        ->render();
                 }
             }
             else {
@@ -150,6 +152,17 @@ class UserController extends Controller
         catch (LoadTemplateException $ex) {
             $this->errorAction(self::$INTERNAL_SERVER_ERROR_MESSAGE, $ex->getMessage());
             return;
+        }
+    }
+
+    /**
+     * Verify Registration Form action
+     *
+     * Handles post from AJAX on user registration page.
+     */
+    public function verifyRegistrationFormAction() {
+        if (isset($_POST['username'])) {
+            echo $this->usernameExists($_POST['username']) ? 'duplicate' : 'unique' ;
         }
     }
 
@@ -176,7 +189,7 @@ class UserController extends Controller
             throw $ex;
         }
         if (!$this->passwordValid($password)) {
-            return 'Invalid password: password must be between 7 and 15 alphanumeric characters (exclusive) and '.
+            return 'Invalid password: password must be between 7 and 15 (exclusive) alphanumeric characters and '.
                 'contain at least one uppercase letter (no special characters allowed)';
         }
         if (!$this->passwordsMatch($password, $passwordRepeat)) {

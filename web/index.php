@@ -70,6 +70,17 @@ $collection->attachRoute(
     )
 );
 
+$collection->attachRoute(
+    new Route(
+        '/js/verifyRegistrationForm', array(
+            '_controller' => 'cgwatkin\a3\controller\UserController::verifyRegistrationFormAction',
+            'methods' => 'POST',
+            'name' => 'userVerifyRegistrationForm'
+        )
+    )
+);
+
+
 $router = new Router($collection);
 $router->setBasePath('/');
 
