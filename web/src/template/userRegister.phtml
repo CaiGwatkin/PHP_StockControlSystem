@@ -5,53 +5,48 @@
         <h1 id="title">Registration form</h1>
         <br>
         <br>
-        <?php if ($user): ?>
-            <p>Thanks, <?= $user->getName() ?>, you have successfully registered.</p>
-            <?php include BUTTON_COMPONENT."welcome.phtml" ?>
-        <?php else: ?>
-            <? echo $formError ? "<p>$formError</p>" : '' ?>
-            <form id="user_registration_form" method="POST">
-                <table>
-                    <tr>
-                        <td><label>Name</label></td>
-                        <td>
-                            <input name="name"
-                                   placeholder="Name" value="<?= $name ?>" required>
-                        </td>
-                        <td id="name_alert"></td>
-                    </tr>
-                    <tr>
-                        <td><label>Username</label></td>
-                        <td>
-                            <input name="username"
-                                   placeholder="Username" value="<?= $username ?>" required>
-                        </td>
-                        <td><p id="username_alert"></p></td>
-                    </tr>
-                    <tr>
-                        <td><label>Password</label></td>
-                        <td>
-                            <input name="password" type="password"
-                                   placeholder="Password" value="<?= $password ?>" required>
-                        </td>
-                        <td><p id="password_alert"></p></td>
-                    </tr>
-                    <tr>
-                        <td><label>Repeat</label></td>
-                        <td>
-                            <input name="passwordRepeat" type="password"
-                                   placeholder="Password" value="<?= $passwordRepeat ?>" required>
-                        </td>
-                        <td><p id="passwordRepeat_alert"></p></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td><button class="action" name="register">Register</button></td>
-                    </tr>
-                </table>
-            </form>
-            <p id="error_p"></p>
-        <?php endif ?>
+        <? echo $formError ? "<p>$formError</p>" : '' ?>
+        <form id="user_registration_form" method="POST">
+            <table>
+                <tr>
+                    <td><label>Name</label></td>
+                    <td>
+                        <input name="name"
+                               placeholder="Name" value="<?= $name ?>" required>
+                    </td>
+                    <td id="name_alert"></td>
+                </tr>
+                <tr>
+                    <td><label>Username</label></td>
+                    <td>
+                        <input name="username"
+                               placeholder="Username" value="<?= $username ?>" required>
+                    </td>
+                    <td><p id="username_alert"></p></td>
+                </tr>
+                <tr>
+                    <td><label>Password</label></td>
+                    <td>
+                        <input name="password" type="password"
+                               placeholder="Password" value="<?= $password ?>" required>
+                    </td>
+                    <td><p id="password_alert"></p></td>
+                </tr>
+                <tr>
+                    <td><label>Repeat</label></td>
+                    <td>
+                        <input name="passwordRepeat" type="password"
+                               placeholder="Password" value="<?= $passwordRepeat ?>" required>
+                    </td>
+                    <td><p id="passwordRepeat_alert"></p></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><button class="action" name="register">Register</button></td>
+                </tr>
+            </table>
+        </form>
+        <p id="error_p"></p>
     </div>
 </div>
 <div class="clear"></div>

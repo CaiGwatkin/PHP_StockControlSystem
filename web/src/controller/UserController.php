@@ -119,10 +119,10 @@ class UserController extends Controller
                         return;
                     }
                     session_start();
+                    $_SESSION['name'] = $user->getName();
                     $_SESSION['username'] = $user->getUsername();
                     $_SESSION['userID'] = $user->getID();
-                    echo $view->addData('user', $user)
-                        ->render();
+                    $this->redirectAction('/');
                 } else {
                     echo $view->addData('scripts', array('userRegisterFormHandler'))
                         ->render();
