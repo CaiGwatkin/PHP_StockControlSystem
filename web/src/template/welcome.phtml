@@ -1,12 +1,14 @@
 <?php include HEADER_COMPONENT."default.phtml" ?>
 <?php include IMAGE_COMPONENT."logo.phtml" ?>
-<?php include MENU_COMPONENT."navigationBar.phtml" ?>
-<div  class="float_center">
-    <div class="float_center_child">
-        <h1 id="title">Welcome, <?= $name ?></h1>
-        <br>
-        <p class="text_centred">Please use the links at the top of the page to navigate.</p>
-        <p class="text_centred">When you are finished, please logout.</p>
+<div class="container">
+    <?php include MENU_COMPONENT."navigationBar.phtml" ?>
+    <div  class="float_center">
+        <div class="float_center_child">
+            <h1 id="title">Welcome, <?= $name ?></h1>
+            <br>
+            <p class="text_centred">Please use the links at the top of the page to navigate.</p>
+            <p class="text_centred">When you are finished, please logout.</p>
+        </div>
     </div>
 </div>
 <?php include FOOTER_COMPONENT."default.phtml" ?>

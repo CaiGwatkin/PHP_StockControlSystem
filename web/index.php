@@ -99,6 +99,16 @@ $collection->attachRoute(
     )
 );
 
+$collection->attachRoute(
+    new Route(
+        '/js/updateSearchResults', array(
+            '_controller' => 'cgwatkin\a3\controller\ProductController::updateSearchResults',
+            'methods' => 'GET',
+            'name' => 'productUpdateSearchResults'
+        )
+    )
+);
+
 
 $router = new Router($collection);
 $router->setBasePath('/');

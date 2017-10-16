@@ -1,35 +1,37 @@
 <?php include HEADER_COMPONENT."default.phtml"; ?>
 <?php include IMAGE_COMPONENT."logo.phtml"; ?>
-<div  class="float_center">
-    <div class="float_center_child">
-        <h1 id="title">Login</h1>
-        <br>
-        <br>
-        <form method="POST">
-            <table>
-                <tr>
-                    <td><label>Username</label></td>
-                    <td>
-                        <input placeholder="Enter Username" name="username" value="<?= $username ? $username : '' ?>" required>
-                    </td>
-                </tr>
-                <tr>
-                    <td><label>Password</label></td>
-                    <td>
-                        <input type="password" placeholder="Enter Password" name="password" required>
-                    </td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td><button class="action" name="login">Login</button></td>
-                </tr>
-            </table>
-        </form>
-        <?= $username ? '<p>Invalid username and/or password.</p>' : '' ?>
-        <br>
-        <br>
-        <br>
-        <p>Don't have an account? <?php include BUTTON_COMPONENT."userRegister.phtml"; ?></p>
+<div class="container">
+    <div  class="float_center">
+        <div class="float_center_child">
+            <h1 id="title">Login</h1>
+            <br>
+            <br>
+            <form method="POST">
+                <table>
+                    <tr>
+                        <td><label>Username</label></td>
+                        <td>
+                            <input placeholder="Enter Username" name="username" value="<?= $username ? $username : '' ?>" required>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label>Password</label></td>
+                        <td>
+                            <input type="password" placeholder="Enter Password" name="password" required>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td><button class="action" name="login">Login</button></td>
+                    </tr>
+                </table>
+            </form>
+            <?= $username ? '<p>Invalid username and/or password.</p>' : '' ?>
+            <br>
+            <br>
+            <br>
+            <p>Don't have an account? <?php include BUTTON_COMPONENT."userRegister.phtml"; ?></p>
+        </div>
     </div>
 </div>
 <?php include FOOTER_COMPONENT."default.phtml"; ?>

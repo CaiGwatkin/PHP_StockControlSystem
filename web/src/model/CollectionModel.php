@@ -81,19 +81,15 @@ class CollectionModel extends Model
             }
         }
         if (!($stmt = $this->db->prepare($query))) {
-            $stmt->close();
             throw new MySQLIStatementException('Error in prepare() in CollectionModel::loadIDs');
         }
         if ($needle && $haystack && !($stmt->bind_param('s', $needle))) {
-            $stmt->close();
             throw new MySQLIStatementException('Error in bind_param() in CollectionModel::loadIDs');
         }
         if (!$stmt->execute()) {
-            $stmt->close();
             throw new MySQLIStatementException('Error in execute() in CollectionModel::loadIDs');
         }
         if (!($result = $stmt->get_result())) {
-            $stmt->close();
             throw new MySQLIStatementException('Error in get_result() in CollectionModel::loadIDs');
         }
         $this->_ids = array_column($result->fetch_all(), 0);

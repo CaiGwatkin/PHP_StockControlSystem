@@ -37,14 +37,21 @@ class ProductController extends Controller
                     $products = $productCollection->getObjects();
                     echo (new View('productSearch'))
                         ->addData('products', $products)
+                        ->addData('scripts', array('productSearchHandler'))
                         ->render();
                 }
                 else {
-                    echo (new View('productSearch'))->render();
+                    echo (new View('productSearch'))
+                        ->addData('scripts', array('productSearchHandler'))
+                        ->render();
                 }
             }
-            catch (MySQLIStatementException $ex) {
+            catch (MySQLDatabaseException $ex) {
                 $this->errorAction(self::$INTERNAL_SERVER_ERROR_MESSAGE, $ex->getMessage());
+                return;
+            }
+            catch (MySQLIStatementException $ex) {
+                $this->errorAction(self::$INTERNAL_SERVER_ERROR_MESSAGE, 'Invalid parameters in URL');
                 return;
             }
             catch (MySQLQueryException $ex) {
@@ -61,27 +68,6 @@ class ProductController extends Controller
         }
     }
 
-//    /**
-//     * Verify Registration Form action
-//     *
-//     * Handles post from AJAX on user registration page.
-//     */
-//    public function verifyRegistrationFormAction() {
-//        try {
-//            if (isset($_POST['username'])) {
-//                echo $this->usernameExists($_POST['username']) ? 'duplicate' : 'unique';
-//            }
-//        }
-//        catch (MySQLDatabaseException $ex) {
-//            error_log(self::$INTERNAL_SERVER_ERROR_MESSAGE.': '.$ex->getMessage());
-//            echo null;
-//        }
-//        catch (MySQLIStatementException $ex) {
-//            error_log(self::$INTERNAL_SERVER_ERROR_MESSAGE.': '.$ex->getMessage());
-//            echo null;
-//        }
-//    }
-
     /**
      * Update Search Results action
      *
@@ -90,26 +76,26 @@ class ProductController extends Controller
     public function updateSearchResults()
     {
         try {
-            // echo json of products
-//            header('Content-Type: application/json');
-//            if (isset($_GET['needle'])) {
-//                $productCollection = new ProductCollectionModel($_GET['needle'], 'name', $_GET['orderBy'],
-//                    $_GET['sort']);
-//                $products = $productCollection->getObjects();
-//                $view = new View('search');
-//                echo $view->addData('products', $products)
-//                    ->render();
-//            }
-//            else {
-//                echo null;
-//            }
+            //echo json of products
+            if (isset($_GET['q'])) {
+                error_log($_GET['q']);
+                header('Content-Type: application/json');
+                $orderBy = $_GET['orderBy']??'sku';
+                $sort = $_GET['sort']??'ASC';
+                $productCollection = new ProductCollectionModel($_GET['q'], 'name', $orderBy, $sort);
+                $products = $productCollection->getObjects();
+                $objectVarArray = array();
+                foreach($products as $product) {
+                    array_push($objectVarArray, $product->exposeVars());
+                }
+                echo json_encode($objectVarArray);
+            }
+            else {
+                echo null;
+            }
         }
         catch (MySQLQueryException $ex) {
             $this->errorAction(self::$INTERNAL_SERVER_ERROR_MESSAGE, 'MySQL error '.$ex->getMessage());
-            return;
-        }
-        catch (LoadTemplateException $ex) {
-            $this->errorAction(self::$INTERNAL_SERVER_ERROR_MESSAGE, $ex->getMessage());
             return;
         }
     }

@@ -46,7 +46,7 @@ class ProductModel extends Model
     /**
      * @var int Product stock quantity.
      */
-    private $_stockQuantity;
+    private $_stock;
     
     /**
      * @return int Product ID.
@@ -149,18 +149,18 @@ class ProductModel extends Model
     /**
      * @return int Product stock quantity.
      */
-    public function getStockQuantity()
+    public function getStock()
     {
-        return $this->_stockQuantity;
+        return $this->_stock;
     }
 
     /**
-     * @param int $stockQuantity Product stock quantity.
+     * @param int $stock Product stock quantity.
      * @return ProductModel $this
      */
-    private function setStockQuantity(int $stockQuantity)
+    private function setStock(int $stock)
     {
-        $this->_stockQuantity = $stockQuantity;
+        $this->_stock = $stock;
         return $this;
     }
     
@@ -199,6 +199,12 @@ class ProductModel extends Model
             ->setName($result['name'])
             ->setCost($result['cost'])
             ->setCategory($result['category'])
-            ->setStockQuantity($result['stock']);
+            ->setStock($result['stock']);
+    }
+
+
+    public function exposeVars()
+    {
+        return get_object_vars($this);
     }
 }
