@@ -100,11 +100,21 @@ class CollectionModel extends Model
      * Get collection of models
      *
      * @return Generator|Model[] model objects
+     * @throws MySQLIStatementException
+     * @throws MySQLQueryException
      */
     public function getObjects()
     {
-        foreach ($this->_ids as $id) {
-            yield (new $this->_class())->load($id);
+        try {
+            foreach ($this->_ids as $id) {
+                yield (new $this->_class())->load($id);
+            }
+        }
+        catch (MySQLIStatementException $ex) {
+            throw $ex;
+        }
+        catch (MySQLQueryException $ex) {
+            throw $ex;
         }
     }
 }

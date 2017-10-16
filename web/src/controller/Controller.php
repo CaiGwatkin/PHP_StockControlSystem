@@ -34,11 +34,17 @@ class Controller
         die();
     }
 
-    public function welcomeAction() {
+    /**
+     * Welcome action
+     *
+     * Displays welcome page to user.
+     */
+    public function welcomeAction()
+    {
         try {
             if ($this->userIsLoggedIn()) {
-                $view = new View('welcome');
-                echo $view->addData('name', $_SESSION['name'])
+                echo (new View('welcome'))->addData('pageName', 'Welcome')
+                    ->addData('name', $_SESSION['name'])
                     ->render();
             } else {
                 $this->redirectAction('/login');
@@ -62,8 +68,8 @@ class Controller
     {
         try {
             error_log($error.': '.$message);
-            $view = new View('error');
-            echo $view->addData('error', $error)
+            echo (new View('error'))->addData('pageName', 'Error')
+                ->addData('error', $error)
                 ->addData('errorMessage', $message)
                 ->render();
         }
@@ -71,34 +77,6 @@ class Controller
             echo self::$INTERNAL_SERVER_ERROR_MESSAGE.': '.$ex->getMessage();
             return;
         }
-    }
-
-    /**
-     * Access Denied action
-     *
-     * Displays access denied view.
-     */
-    public function accessDeniedAction()
-    {
-        try {
-            $view = new View('accountAccessDenied');
-            echo $view->render();
-        }
-        catch (LoadTemplateException $ex) {
-            $this->errorAction(self::$INTERNAL_SERVER_ERROR_MESSAGE, $ex->getMessage());
-            return;
-        }
-    }
-
-    /**
-     * Checks if user is logged in as admin.
-     *
-     * @return bool Whether the current user is admin.
-     */
-    function userIsAdmin()
-    {
-        session_start();
-        return $this->userIsLoggedIn() && $_SESSION['username'] == 'admin';
     }
 
     /**

@@ -37,6 +37,11 @@ class ProductModel extends Model
      * @var float Product cost.
      */
     private $_cost;
+
+    /**
+     * @var float Product cost in string format.
+     */
+    private $_costString;
     
     /**
      * @var string Product category.
@@ -103,7 +108,7 @@ class ProductModel extends Model
     }
 
     /**
-     * @return int Product cost.
+     * @return float Product cost.
      */
     public function getCost()
     {
@@ -111,20 +116,29 @@ class ProductModel extends Model
     }
 
     /**
+     * @param float $cost Product cost.
+     * @return ProductModel $this
+     */
+    private function setCost(float $cost)
+    {
+        $this->_cost = $cost;
+        return $this->setCostString();
+    }
+
+    /**
      * @return int Product cost.
      */
     public function getCostString()
     {
-        return money_format('$%i', $this->_cost);
+        return $this->_costString;
     }
 
     /**
-     * @param int $cost Product cost.
      * @return ProductModel $this
      */
-    private function setCost(int $cost)
+    private function setCostString()
     {
-        $this->_cost = $cost;
+        $this->_costString =  money_format('$%i', $this->_cost);
         return $this;
     }
 
@@ -175,9 +189,9 @@ class ProductModel extends Model
     public function load(int $id)
     {
         if (!($stmt = $this->db->prepare(
-            "SELECT id, sku, name, cost, category, stock
+            'SELECT id, sku, name, cost, category, stock
             FROM product
-            WHERE id = ?;"
+            WHERE id = ?;'
         ))) {
             throw new MySQLIStatementException('Error in prepare() in ProductModel::load');
         }
@@ -202,7 +216,11 @@ class ProductModel extends Model
             ->setStock($result['stock']);
     }
 
-
+    /**
+     * Returns array of object member variables.
+     *
+     * @return array
+     */
     public function exposeVars()
     {
         return get_object_vars($this);

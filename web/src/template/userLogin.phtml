@@ -5,19 +5,22 @@
         <div class="float_center_child">
             <h1 id="title">Login</h1>
             <br>
+            <p class="text_centred"><b><?= $invalid ? 'Invalid username and/or password.' : ' ' ?></b></p>
             <br>
             <form method="POST">
                 <table>
                     <tr>
                         <td><label>Username</label></td>
                         <td>
-                            <input placeholder="Enter Username" name="username" value="<?= $username ? $username : '' ?>" required>
+                            <input placeholder="Enter Username" name="username"
+                                   value="<?= $username ? $username : '' ?>" required>
                         </td>
                     </tr>
                     <tr>
                         <td><label>Password</label></td>
                         <td>
-                            <input type="password" placeholder="Enter Password" name="password" required>
+                            <input type="password" placeholder="Enter Password" name="password"
+                                   value="<?= $password ? $password : '' ?>" required>
                         </td>
                     </tr>
                     <tr>
@@ -26,7 +29,6 @@
                     </tr>
                 </table>
             </form>
-            <?= $username ? '<p>Invalid username and/or password.</p>' : '' ?>
             <br>
             <br>
             <br>

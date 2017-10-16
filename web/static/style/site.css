@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
-BASE
+COMMON
  */
 * {
     padding: 0;
@@ -43,7 +43,13 @@ img#logo {
     clear: both;
 }
 
+.error {
+    width: 200px;
+    padding-top: 8px;
+}
+
 input {
+    width: 168px;
     padding: 8px 16px;
 }
 
@@ -138,6 +144,10 @@ div.search_box th {
     cursor: pointer;
 }
 
+div.search_box th, div.search_box td {
+    border: solid 1px lightgrey;
+}
+
 div.search_box th:hover {
     background-color: #C8C8C8;
 }
@@ -150,42 +160,41 @@ div.search_box tr:nth-child(odd)  {
     background-color: #E2E2E2;
 }
 
-div.search_box th.sku, td.sku, th.cost, td.cost, th.stock, td.stock {
+th.sku, td.sku, th.cost, td.cost, th.stock, td.stock {
     width: 10%;
 }
 
-div.search_box th.name, td.name {
+th.name, td.name {
     width: 40%;
 }
 
-div.search_box th.category, td.category {
+th.category, td.category {
     width: 30%;
 }
 
-div.search_box .currency {
-    text-align: center;
-}
-
-div.search_box .number {
+.currency, .number {
     text-align: right;
 }
 
-/* Following sampled from https://stackoverflow.com/a/22156412 */
+/* Sorting sampled from https://stackoverflow.com/a/22156412 */
 .sorting, .sorting_asc, .sorting_desc {
     padding: 4px 21px 4px 4px;
     cursor: pointer;
 }
 
 .sorting {
-    background:url(data:image/gif;base64,R0lGODlhCwALAJEAAAAAAP///xUVFf///yH5BAEAAAMALAAAAAALAAsAAAIUnC2nKLnT4or00PvyrQwrPzUZshQAOw==) no-repeat center right;
-}
-
-.sorting_asc {
-    background:url(data:image/gif;base64,R0lGODlhCwALAJEAAAAAAP///xUVFf///yH5BAEAAAMALAAAAAALAAsAAAIRnC2nKLnT4or00Puy3rx7VQAAOw==) no-repeat center right;
+    background: url(data:image/gif;base64,R0lGODlhCwALAJEAAAAAAP///xUVFf///yH5BAEAAAMALAAAAAALAAsAAAIUnC2nKLnT4or00PvyrQwrPzUZshQAOw==)
+        no-repeat center right;
 }
 
 .sorting_desc {
-    background:url(data:image/gif;base64,R0lGODlhCwALAJEAAAAAAP///xUVFf///yH5BAEAAAMALAAAAAALAAsAAAIPnI+py+0/hJzz0IruwjsVADs=) no-repeat center right;
+    background:url(data:image/gif;base64,R0lGODlhCwALAJEAAAAAAP///xUVFf///yH5BAEAAAMALAAAAAALAAsAAAIRnC2nKLnT4or00Puy3rx7VQAAOw==)
+        no-repeat center right;
+}
+
+.sorting_asc {
+    background:url(data:image/gif;base64,R0lGODlhCwALAJEAAAAAAP///xUVFf///yH5BAEAAAMALAAAAAALAAsAAAIPnI+py+0/hJzz0IruwjsVADs=)
+        no-repeat center right;
 }
 /* End sample */
 

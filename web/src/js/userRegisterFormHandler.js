@@ -4,51 +4,111 @@
  * Handles user input validation using javascript, AJAX, and JQuery.
  */
 
+
+/**
+ * The username input element.
+ * @type {*|jQuery|HTMLElement}
+ */
+var usernameInput = null;
+
+/**
+ * The username error td element.
+ * @type {*|jQuery|HTMLElement}
+ */
+var usernameError = null;
+
+/**
+ * The password input element.
+ * @type {*|jQuery|HTMLElement}
+ */
+var passwordInput = null;
+
+/**
+ * The password error td element.
+ * @type {*|jQuery|HTMLElement}
+ */
+var passwordError = null;
+
+/**
+ * The password repeat input element.
+ * @type {*|jQuery|HTMLElement}
+ */
+var passwordRepeatInput = null;
+
+/**
+ * The password repeat error td element.
+ * @type {*|jQuery|HTMLElement}
+ */
+var passwordRepeatError = null;
+
+/**
+ * Returns true if string is alphanumeric.
+ *
+ * @returns {boolean} true if string is alphanumeric.
+ */
+String.prototype.isAlphanumeric = function() {
+
+    return !!this.match(/^[a-zA-Z0-9]+$/);
+};
+
 /**
  * Once HTML document is fully loaded, setup event handlers.
  */
 $(document).ready(function () {
-    var usernameInput = $("input[name=username]"),
-        usernameAlertTD = $("#username_alert"),
-        passwordInput = $("input[name=password]"),
-        passwordAlertTD = $("#password_alert"),
-        passwordRepeatInput = $("input[name=passwordRepeat]"),
-        passwordRepeatAlertTD = $("#passwordRepeat_alert");
+    // Find elements with JQuery.
+    usernameInput = $("input[name=username]");
+    usernameError = usernameInput.siblings().find('.error');
+    passwordInput = $("input[name=password]");
+    passwordError = passwordInput.siblings().find('.error');
+    passwordRepeatInput = $("input[name=passwordRepeat]");
+    passwordRepeatError = passwordRepeatInput.siblings().find('.error');
 
-    usernameInput.keyup(function () {
-        usernameAlertTD.html(checkUsernameValid(usernameInput));
-        if (usernameAlertTD.html() === "") {
-            checkUsernameUnique(usernameInput, usernameAlertTD);
-        }
-    });
-
-    passwordInput.keyup(function () {
-        passwordAlertTD.html(checkPasswordValid(passwordInput));
-        if (passwordRepeatAlertTD.html() !== "") {
-            passwordRepeatAlertTD.html(checkPasswordsMatch(passwordInput, passwordRepeatInput));
-        }
-    });
-
-    passwordRepeatInput.focusout(function () {
-        passwordRepeatAlertTD.html(checkPasswordsMatch(passwordInput, passwordRepeatInput));
-    });
-
-    passwordRepeatInput.focusin(function () {
-        passwordRepeatAlertTD.html("");
-    });
+    // Add listeners
+    usernameInput.keyup(checkUsername);
+    passwordInput.keyup(checkPassword);
+    passwordRepeatInput.keyup(checkPasswordRepeat);
 });
 
 /**
+ * Check that username is valid and update error message.
+ */
+function checkUsername() {
+
+    usernameError.html(checkUsernameValid());
+    if (usernameError.html() === "") {
+        checkUsernameUnique();
+    }
+}
+
+/**
+ * Check that password is valid and update error message.
+ */
+function checkPassword() {
+
+    passwordError.html(checkPasswordValid());
+    if (passwordRepeatError.html() !== "") {
+        passwordRepeatError.html(checkPasswordsMatch());
+    }
+}
+
+/**
+ * Check that password repeat is valid and update error message.
+ */
+function checkPasswordRepeat() {
+
+    passwordRepeatError.html(checkPasswordsMatch());
+}
+
+/**
  * Checks that the username is valid.
- * 
- * @param usernameInput The username HTML input element
+ *
  * @returns {string} The message to be displayed.
  */
-function checkUsernameValid(usernameInput) {
+function checkUsernameValid() {
 
     var username = usernameInput.val(),
         message;
-    if (!isAlphanumeric(username) && username.length !== 0) {
+    if (!username.isAlphanumeric() && username.length !== 0) {
         message = "Invalid username: must contain alphanumeric characters only";
     }
     else {
@@ -57,14 +117,10 @@ function checkUsernameValid(usernameInput) {
     return message;
 }
 
-
 /**
  * Checks that the username is unique in the database.
- *
- * @param usernameInput The username HTML input element.
- * @param usernameAlertTD The username alert HTML td element.
  */
-function checkUsernameUnique(usernameInput, usernameAlertTD) {
+function checkUsernameUnique() {
 
     $.ajax({
         type: "POST",
@@ -74,7 +130,7 @@ function checkUsernameUnique(usernameInput, usernameAlertTD) {
         success: [
             function (data) {
                 if (data === "duplicate") {
-                    usernameAlertTD.html("Invalid username: username already exists");
+                    usernameError.html("Invalid username: username already exists");
                 }
             }
         ]
@@ -84,15 +140,14 @@ function checkUsernameUnique(usernameInput, usernameAlertTD) {
 /**
  * Checks that the password is valid.
  *
- * @param passwordInput The password HTML input element.
  * @returns {string} The message to be displayed.
  */
-function checkPasswordValid(passwordInput) {
+function checkPasswordValid() {
 
     var password = passwordInput.val(),
         length = password.length,
         message;
-    if (length > 7 && length < 15 && !!password.match(/^(?=.*[A-Z])/) && isAlphanumeric(password)) {
+    if (length > 7 && length < 15 && !!password.match(/^(?=.*[A-Z])/) && password.isAlphanumeric()) {
         message = "";
     }
     else {
@@ -102,15 +157,12 @@ function checkPasswordValid(passwordInput) {
     return message;
 }
 
-
 /**
  * Checks that the password is valid.
  *
- * @param passwordInput The password HTML input element.
- * @param passwordRepeatInput The password repeat HTML input element.
  * @returns {string} The message to be displayed.
  */
-function checkPasswordsMatch(passwordInput, passwordRepeatInput) {
+function checkPasswordsMatch() {
 
     var message;
     if (passwordInput.val() === passwordRepeatInput.val()) {
@@ -120,15 +172,4 @@ function checkPasswordsMatch(passwordInput, passwordRepeatInput) {
         message = "Invalid password: passwords do not match";
     }
     return message;
-}
-
-/**
- * Returns true if input is alphanumeric.
- *
- * @param input An input string.
- * @returns {boolean} true if input string is alphanumeric.
- */
-function isAlphanumeric(input) {
-
-    return !!input.match(/^[a-zA-Z0-9]+$/);
 }

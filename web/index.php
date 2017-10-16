@@ -1,8 +1,12 @@
 <?php
+/*
+ * Gwatkin, 15146508
+ */
+
 /**
  * 159.339 Internet Programming 2017.2
  * Student ID: 15146508
- * Assignment: 2   Date: 30/09/17
+ * Assignment: 3   Date: 30/09/17
  * System: PHP 7.1
  * Code guidelines: PSR-1, PSR-2
  *
@@ -13,7 +17,6 @@
  * @package cgwatkin/a3
  * @author  Cai Gwatkin <caigwatkin@gmail.com>
  **/
-date_default_timezone_set('Pacific/Auckland');
 
 require __DIR__ . '/vendor/autoload.php';
 
@@ -21,22 +24,29 @@ use PHPRouter\RouteCollection;
 use PHPRouter\Router;
 use PHPRouter\Route;
 
+/**
+ * Paths to resources in server.
+ */
 define('APP_ROOT', __DIR__);
-define('BUTTON_COMPONENT', APP_ROOT.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'template'
-    .DIRECTORY_SEPARATOR.'component'.DIRECTORY_SEPARATOR.'button'.DIRECTORY_SEPARATOR);
-define('HEADER_COMPONENT', APP_ROOT.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'template'
-    .DIRECTORY_SEPARATOR.'component'.DIRECTORY_SEPARATOR.'header'.DIRECTORY_SEPARATOR);
-define('FOOTER_COMPONENT', APP_ROOT.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'template'
-    .DIRECTORY_SEPARATOR.'component'.DIRECTORY_SEPARATOR.'footer'.DIRECTORY_SEPARATOR);
-define('MENU_COMPONENT', APP_ROOT.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'template'
-    .DIRECTORY_SEPARATOR.'component'.DIRECTORY_SEPARATOR.'menu'.DIRECTORY_SEPARATOR);
-define('IMAGE_COMPONENT', APP_ROOT.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'template'
-    .DIRECTORY_SEPARATOR.'component'.DIRECTORY_SEPARATOR.'image'.DIRECTORY_SEPARATOR);
+define('COMPONENT', APP_ROOT.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.'template'
+    .DIRECTORY_SEPARATOR.'component'.DIRECTORY_SEPARATOR);
+define('BUTTON_COMPONENT', COMPONENT.'button'.DIRECTORY_SEPARATOR);
+define('HEADER_COMPONENT', COMPONENT.'header'.DIRECTORY_SEPARATOR);
+define('FOOTER_COMPONENT', COMPONENT.'footer'.DIRECTORY_SEPARATOR);
+define('MENU_COMPONENT', COMPONENT.'menu'.DIRECTORY_SEPARATOR);
+define('IMAGE_COMPONENT', COMPONENT.'image'.DIRECTORY_SEPARATOR);
+
+/**
+ * Database information.
+ */
 define('DB_HOST', 'mysql');
 define('DB_USER', 'root');
 define('DB_PASS', 'root');
 define('DB_NAME', 'cgwatkin_a3');
 
+/***********************************************************************************************************************
+ * MANAGE ROUTING
+ */
 $collection = new RouteCollection();
 
 $collection->attachRoute(
@@ -109,29 +119,25 @@ $collection->attachRoute(
     )
 );
 
-
+/***********************************************************************************************************************
+ * CREATE ROUTE
+ */
 $router = new Router($collection);
 $router->setBasePath('/');
-
-$route = $router->matchCurrentRequest();
-
-// If route was dispatched successfully - return
-if ($route) {
-    // true indicates to webserver that the route was successfully served
+if ($router->matchCurrentRequest()) {
     return true;
 }
 
-// Otherwise check if the request is for a static resource
+/***********************************************************************************************************************
+ * MANAGE RESOURCES
+ */
 $info = parse_url($_SERVER['REQUEST_URI']);
-// check if its allowed static resource type and that the file exists
 if (preg_match('/\.(?:png|jpg|jpeg|css|js)$/', "$info[path]")
     && file_exists("./$info[path]")
 ) {
-    // false indicates to web server that the route is for a static file - fetch it and return to client
     return false;
-} else {
+}
+else {
     header("HTTP/1.0 404 Not Found");
-    // Custom error page
-    // require 'static/html/404.html';
     return true;
 }

@@ -47,13 +47,13 @@ class Model
             // create it and populate with sample data
 
             $result = $this->db->query(
-                    "CREATE TABLE user (
+                    'CREATE TABLE user (
                         id INT unsigned NOT NULL UNIQUE AUTO_INCREMENT,
                         username VARCHAR(256) NOT NULL UNIQUE,
                         pwd VARCHAR(256) NOT NULL,
                         name VARCHAR(256) NOT NULL,
                         PRIMARY KEY (id)
-            );");
+            );');
             if (!$result) {
                 error_log($this->db->error);
                 throw new MySQLDatabaseException('Failed creating table: user');
@@ -81,7 +81,7 @@ class Model
             // create it and populate with sample data
 
             $result = $this->db->query(
-                    "CREATE TABLE product (
+                    'CREATE TABLE product (
                         id INT UNSIGNED NOT NULL UNIQUE AUTO_INCREMENT,
                         sku CHAR(6) NOT NULL UNIQUE,
                         name VARCHAR(256) NOT NULL,
@@ -90,7 +90,7 @@ class Model
                         stock MEDIUMINT UNSIGNED NOT NULL,
                         PRIMARY KEY (id),
                         INDEX ix_product (category)
-            );");
+            );');
             if (!$result) {
                 error_log($this->db->error);
                 throw new MySQLDatabaseException('Failed creating table: product');

@@ -119,9 +119,9 @@ class UserModel extends Model
     public function checkLogin(string $username, string $password)
     {
         if (!($stmt = $this->db->prepare(
-            "SELECT id
+            'SELECT id
             FROM user
-            WHERE username = ?"
+            WHERE username = ?'
         ))) {
             throw new MySQLIStatementException('Error in prepare() in UserModel::checkLogin');
         }
@@ -135,7 +135,7 @@ class UserModel extends Model
             throw new MySQLIStatementException('Error in get_result() in UserModel::checkLogin');
         }
         if ($result->num_rows == 0) {
-            throw new MySQLQueryException("No user found with username '$username' in UserModel::load");
+            return null;
         }
         $result = $result->fetch_assoc();
         try {
@@ -145,8 +145,7 @@ class UserModel extends Model
             throw $ex;
         }
         catch (MySQLQueryException $ex) {
-            error_log($ex->getMessage());
-            return null;
+            throw $ex;
         }
         if (!password_verify($this->_id.$password, $this->_password)) {
             return null;
@@ -168,9 +167,9 @@ class UserModel extends Model
     public function load($id)
     {
         if (!($stmt = $this->db->prepare(
-            "SELECT id, username, pwd, name
+            'SELECT id, username, pwd, name
             FROM user
-            WHERE id = ?;"
+            WHERE id = ?;'
         ))) {
             throw new MySQLIStatementException('Error in prepare() in UserModel::load');
         }
@@ -184,7 +183,7 @@ class UserModel extends Model
             throw new MySQLIStatementException('Error in get_result() in UserModel::load');
         }
         if ($result->num_rows == 0) {
-            throw new MySQLQueryException("No user found with id '$id' in UserModel::load");
+            return null;
         }
         $result = $result->fetch_assoc();
         return $this->setID($result['id'])
@@ -226,13 +225,13 @@ class UserModel extends Model
     private function insert()
     {
         if (!($stmt = $this->db->prepare(
-            "INSERT INTO user
+            'INSERT INTO user
             VALUES (
                 NULL,
                 ?,
                 ?,
                 ?
-            );"
+            );'
         ))) {
             throw new MySQLIStatementException('Error in prepare() in UserModel::insert');
         }
@@ -255,9 +254,9 @@ class UserModel extends Model
     private function updatePassword()
     {
         if (!($stmt = $this->db->prepare(
-            "UPDATE user
+            'UPDATE user
             SET pwd = ?
-            WHERE id = ?"
+            WHERE id = ?'
         ))) {
             throw new MySQLIStatementException('Error in prepare() in UserModel::updatePassword');
         }
@@ -283,9 +282,9 @@ class UserModel extends Model
     public function usernameExists($username)
     {
         if (!($stmt = $this->db->prepare(
-            "SELECT id
+            'SELECT id
             FROM user
-            WHERE username = ?;"
+            WHERE username = ?;'
         ))) {
             throw new MySQLIStatementException('Error in prepare() in UserModel::usernameExists');
         }

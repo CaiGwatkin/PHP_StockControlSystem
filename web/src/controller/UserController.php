@@ -27,20 +27,21 @@ class UserController extends Controller
     public function loginAction()
     {
         try {
+            $view = (new View('userLogin'))->addData('pageName', 'Login');
             if (isset($_POST['login'])) {
                 $username = $_POST['username'];
-                $user = (new UserModel())
-                    ->checkLogin($username, $_POST['password']);
+                $password = $_POST['password'];
+                $user = (new UserModel())->checkLogin($username, $password);
                 if (!$user) {
-                    $view = new View('userLogin');
-                    echo $view->addData('username', $username)
+                    echo $view->addData('invalid', true)
+                        ->addData('username', $username)
+                        ->addData('password', $password)
                         ->render();
                     return;
                 }
-                $username = $user->getUsername();
                 session_start();
                 $_SESSION['name'] = $user->getName();
-                $_SESSION['username'] = $username;
+                $_SESSION['username'] = $user->getUsername();
                 $_SESSION['userID'] = $user->getID();
                 $this->redirectAction('/');
             }
@@ -48,7 +49,7 @@ class UserController extends Controller
                 $this->redirectAction('/');
             }
             else {
-                echo (new View('userLogin'))->render();
+                echo $view->render();
             }
         }
         catch (MySQLDatabaseException $ex) {
@@ -88,25 +89,22 @@ class UserController extends Controller
     {
         try {
             if (!$this->userIsLoggedIn()) {
-                $view = new View('userRegister');
+                $view = (new View('userRegister'))->addData('pageName', 'Register');
                 if (isset($_POST['register'])) {
                     $name = $_POST['name'];
                     $username = $_POST['username'];
                     $password = $_POST['password'];
-                    $passwordRepeat = $_POST['passwordRepeat'];
-                    $formError = $this->checkRegistrationForm($username, $password, $passwordRepeat);
+                    $formError = $this->checkRegistrationForm($username, $password, $_POST['passwordRepeat']);
                     if ($formError) {
                         echo $view->addData('formError', $formError)
                             ->addData('name', $name)
                             ->addData('username', $username)
                             ->addData('password', $password)
-                            ->addData('passwordRepeat', $passwordRepeat)
                             ->addData('scripts', array('userRegisterFormHandler'))
                             ->render();
                         return;
                     }
-                    $user = new UserModel();
-                    $user->setName($name)
+                    $user = (new UserModel())->setName($name)
                         ->setUsername($username)
                         ->setPassword($password)
                         ->save();

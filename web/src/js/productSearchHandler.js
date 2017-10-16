@@ -55,13 +55,14 @@ var sort = true;
 
 /**
  * Shorthand for product variables names returned in JSON format.
- * @type {{sku: string, name: string, category: string, cost: string, stock: string}}
+ * @type {{sku: string, name: string, category: string, cost: string, costString: string, stock: string}}
  */
 var productVariables = {
     'sku': '_sku',
     'name' : '_name',
     'category' : '_category',
     'cost' : '_cost',
+    'costString' : '_costString',
     'stock' : '_stock'
 };
 
@@ -195,7 +196,7 @@ function getNewRows() {
                         product[productVariables['sku']],
                         product[productVariables['name']],
                         product[productVariables['category']],
-                        product[productVariables['cost']],
+                        product[productVariables['costString']],
                         product[productVariables['stock']]
                     ));
                 });

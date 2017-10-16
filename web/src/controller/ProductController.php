@@ -30,7 +30,7 @@ class ProductController extends Controller
     {
         if ($this->userIsLoggedIn()) {
             try {
-                echo (new View('productSearch'))
+                echo (new View('productSearch'))->addData('pageName', 'Search')
                     ->addData('scripts', array('productSearchHandler'))
                     ->render();
             }
