@@ -107,7 +107,15 @@ class ProductModel extends Model
      */
     public function getCost()
     {
-        return $this->_sku;
+        return $this->_cost;
+    }
+
+    /**
+     * @return int Product cost.
+     */
+    public function getCostString()
+    {
+        return money_format('$%i', $this->_cost);
     }
 
     /**
@@ -125,7 +133,7 @@ class ProductModel extends Model
      */
     public function getCategory()
     {
-        return $this->_sku;
+        return $this->_category;
     }
 
     /**

@@ -41,7 +41,20 @@ img#logo {
     clear: both;
 }
 
-button, input {
+input {
+    padding: 8px 16px;
+}
+
+button {
+    padding: 8px 16px;
+    cursor:pointer;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+th, td {
     padding: 8px 16px;
 }
 
@@ -91,21 +104,60 @@ div.navigation_bar li a.active {
 }
 
 /***********************************************************************************************************************
-TABLE
+SEARCH
  */
-table {
-    border-collapse: collapse;
+div.search_box {
+    padding-top: 30px;
+    width: 100%;
 }
 
-th, td {
-    padding-right: 50px;
-    padding-bottom: 5px;
+div.search_box #title {
+    padding-top: 0;
+    padding-right: 30px;
+    float: left;
     text-align: left;
 }
 
-table .action {
-    display: block;
-    float: right;
+div.search_box input {
+    float: left;
+    text-align: left;
+}
+
+div.search_box table {
+    border: solid 1px;
+    background-color: white;
+    width: 100%;
+}
+
+div.search_box th {
+    background-color: black;
+    color: white;
+    text-align: left;
+    cursor: pointer;
+}
+
+div.search_box td {
+    border: solid 1px;
+}
+
+div.search_box th.sku, td.sku, th.cost, td.cost, th.stock, td.stock {
+    width: 10%;
+}
+
+div.search_box th.name, td.name {
+    width: 40%;
+}
+
+div.search_box th.category, td.category {
+    width: 30%;
+}
+
+div.search_box th.currency, td.currency {
+    text-align: center;
+}
+
+div.search_box th.number, td.number {
+    text-align: right;
 }
 
 /***********************************************************************************************************************

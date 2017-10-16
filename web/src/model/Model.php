@@ -35,13 +35,13 @@ class Model
 
         //----------------------------------------------------------------------------
         // Creates the database and populates it with sample data
-        $this->db->query("CREATE DATABASE IF NOT EXISTS ".DB_NAME.";");
+        $this->db->query('CREATE DATABASE IF NOT EXISTS '.DB_NAME.';');
 
         if (!$this->db->select_db(DB_NAME)) {
             throw new MySQLDatabaseException('MySQL database not available');
         }
 
-        $result = $this->db->query("SHOW TABLES LIKE 'user';");
+        $result = $this->db->query('SHOW TABLES LIKE "user";');
         if ($result->num_rows == 0) {
             // table doesn't exist
             // create it and populate with sample data
@@ -75,7 +75,7 @@ class Model
             }
         }
 
-        $result = $this->db->query("SHOW TABLES LIKE 'product';");
+        $result = $this->db->query('SHOW TABLES LIKE "product";');
         if ($result->num_rows == 0) {
             // table doesn't exist
             // create it and populate with sample data

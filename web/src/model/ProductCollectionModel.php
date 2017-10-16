@@ -4,6 +4,7 @@
  */
 namespace cgwatkin\a3\model;
 
+use cgwatkin\a3\exception\MySQLIStatementException;
 use cgwatkin\a3\exception\MySQLQueryException;
 
 /**
@@ -26,16 +27,19 @@ class ProductCollectionModel extends CollectionModel
      * @param string $orderBy Column to order results by.
      * @param string $sort ASC or DESC.
      *
+     * @throws MySQLIStatementException
      * @throws MySQLQueryException
      */
-    function __construct($needle = null, $haystack = null, $orderBy = null, $sort = 'ASC')
+    function __construct($needle = null, $haystack = null, $orderBy = null, $sort = null)
     {
         $table = 'product';
-        $orderClause = $orderBy ? "ORDER BY $orderBy $sort" : null;
-        $whereClause =  $needle && $haystack ? "WHERE INSTR($haystack, '$needle')" : null;
+        $sort = $sort == 'ASC' || $sort == 'DESC' ? $sort : null;
+        $needle = "%$needle%";
         try {
-            parent::__construct(ProductModel::class, $table, null, null,
-                $orderClause, $whereClause);
+            parent::__construct(ProductModel::class, $table, $needle, $haystack, $orderBy, $sort);
+        }
+        catch (MySQLIStatementException $ex) {
+            throw $ex;
         }
         catch (MySQLQueryException $ex) {
             throw $ex;

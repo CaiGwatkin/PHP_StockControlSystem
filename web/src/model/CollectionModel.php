@@ -32,19 +32,22 @@ class CollectionModel extends Model
      *
      * @param callable $class The class to be generated as a collection.
      * @param string $table The table to gather collection from.
-     * @param string $limitClause Full LIMIT clause.
-     * @param string $offsetClause Full OFFSET clause.
-     * @param string $orderClause Full ORDER BY clause.
-     * @param string $whereClause Full WHERE clause.
+     * @param string $needle Needle value for WHERE INSTR(needle, haystack).
+     * @param string $haystack Haystack value for WHERE INSTR(needle, haystack).
+     * @param string $orderBy Order by value.
+     * @param string $sort Sort order.
      *
+     * @throws MySQLIStatementException
      * @throws MySQLQueryException
      */
-    function __construct($class, string $table, $limitClause = null, $offsetClause = null,
-                         $orderClause = null, $whereClause = null)
+    function __construct($class, string $table, $needle = null, $haystack = null, $orderBy = null, $sort = null)
     {
         parent::__construct();
         try {
-            $this->loadIDs($table, $limitClause, $offsetClause, $orderClause, $whereClause);
+            $this->loadIDs($table, $needle, $haystack, $orderBy, $sort);
+        }
+        catch (MySQLIStatementException $ex) {
+            throw $ex;
         }
         catch (MySQLQueryException $ex) {
             throw $ex;
@@ -53,34 +56,48 @@ class CollectionModel extends Model
     }
 
     /**
+     * Load IDs from database
      *
+     * @param string $table The table to load from.
+     * @param string $needle Needle for WHERE INSTR(needle, haystack).
+     * @param string $haystack Haystack for WHERE INSTR(needle, haystack).
+     * @param string $orderBy Order by value.
+     * @param string $sort Sort order.
      *
-     * @param string $table
-     * @param $limitClause
-     * @param $offsetClause
-     * @param $orderClause
-     * @param $whereClause
      * @throws MySQLIStatementException
      * @throws MySQLQueryException
      */
-    private function loadIDs(string $table, $limitClause, $offsetClause,
-                             $orderClause, $whereClause) {
-        $table = mysqli_real_escape_string($this->db, $table);
-        $limitClause = mysqli_real_escape_string($this->db, $limitClause);
-        $offsetClause = mysqli_real_escape_string($this->db, $offsetClause);
-        $orderClause = mysqli_real_escape_string($this->db, $orderClause);
-        $whereClause = mysqli_real_escape_string($this->db, $whereClause);
-        if (!$result = $this->db->query(
-            "SELECT id 
-            FROM $table 
-            $whereClause 
-            $orderClause 
-            $limitClause 
-            $offsetClause;"
-        )) {
-            throw new MySQLQueryException('Error from select in CollectionModel::__construct');
+    private function loadIDs(string $table, $needle, $haystack, $orderBy, $sort) {
+        // Extremely messy workaround for prepared statements not letting columns names be added as params
+        $query = "SELECT id FROM $table";
+        if ($needle && $haystack) {
+            $haystack = $this->db->real_escape_string($haystack);
+            $query = $query." WHERE $haystack LIKE ?";
+        }
+        if ($orderBy) {
+            $query = $query." ORDER BY $orderBy";
+            if ($sort) {
+                $query = $query." $sort";
+            }
+        }
+        if (!($stmt = $this->db->prepare($query))) {
+            $stmt->close();
+            throw new MySQLIStatementException('Error in prepare() in CollectionModel::loadIDs');
+        }
+        if ($needle && $haystack && !($stmt->bind_param('s', $needle))) {
+            $stmt->close();
+            throw new MySQLIStatementException('Error in bind_param() in CollectionModel::loadIDs');
+        }
+        if (!$stmt->execute()) {
+            $stmt->close();
+            throw new MySQLIStatementException('Error in execute() in CollectionModel::loadIDs');
+        }
+        if (!($result = $stmt->get_result())) {
+            $stmt->close();
+            throw new MySQLIStatementException('Error in get_result() in CollectionModel::loadIDs');
         }
         $this->_ids = array_column($result->fetch_all(), 0);
+        $stmt->close();
     }
 
     /**
