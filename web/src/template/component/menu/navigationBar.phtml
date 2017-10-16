@@ -1,8 +1,8 @@
 <div class="navigation_bar">
     <ul>
-        <li><a <?= $_SERVER['REQUEST_URI'] == '/' ? 'class="active"' : "" ?>
+        <li><a <?= explode('?', $_SERVER['REQUEST_URI'])[0] == '/' ? 'class="active"' : "" ?>
                href="http://<?= $_SERVER['HTTP_HOST'] ?>">Welcome</a></li>
-        <li><a <?= $_SERVER['REQUEST_URI'] == '/search' ? 'class="active"' : "" ?>
+        <li><a <?= explode('?', $_SERVER['REQUEST_URI'])[0] == '/search' ? 'class="active"' : "" ?>
                href="http://<?= $_SERVER['HTTP_HOST'] ?>/search">Search</a></li>
         <li class="logout"><a href="http://<?= $_SERVER['HTTP_HOST'] ?>/logout">Logout</a></li>
     </ul>

@@ -4,17 +4,66 @@
  * Handles updating search results table.
  */
 
-// <?php if ($products) {
-//     foreach ($products as $product) { ?>
-//     <tr class='data_row'>
-//             <td class='sku'><?= $product->getSKU() ?></td>
-//         <td class='name'><?= $product->getName() ?></td>
-//         <td class='category'><?= $product->getCategory() ?></td>
-//         <td class='cost, currency'><?= $product->getCostString() ?></td>
-//         <td class='stock, number'><?= $product->getStockQuantity() ?></td>
-//         </tr>
-//         <?php }
-// } ?>
+/**
+ * Template of the table rows
+ * @type {string}
+ */
+var rowTemplate =
+    '<tr class="data_row">' +
+        '<td class="sku">{0}</td>' +
+        '<td class="name">{1}</td>' +
+        '<td class="category">{2}</td>' +
+        '<td class="cost, currency">{3}</td>' +
+        '<td class="stock, number">{4}</td>' +
+    '</tr>';
+
+/**
+ * The input field in which the search term is typed.
+ * @type {*|jQuery|HTMLElement}
+ */
+var searchInput = null;
+
+/**
+ * The table in which to display search results.
+ * @type {*|jQuery|HTMLElement}
+ */
+var searchResultsTable = null;
+
+/**
+ * The row in which the header values exist.
+ * @type {*|jQuery|HTMLElement}
+ */
+var headerRow = null;
+
+/**
+ * The term to search the database with.
+ * @type {string}
+ */
+var searchTerm = '';
+
+/**
+ * The column to order results by.
+ * @type {string}
+ */
+var orderBy = 'sku';
+
+/**
+ * The sort order of results { true: 'ASC', false: 'DESC' }.
+ * @type {boolean}
+ */
+var sort = true;
+
+/**
+ * Shorthand for product variables names returned in JSON format.
+ * @type {{sku: string, name: string, category: string, cost: string, stock: string}}
+ */
+var productVariables = {
+    'sku': '_sku',
+    'name' : '_name',
+    'category' : '_category',
+    'cost' : '_cost',
+    'stock' : '_stock'
+};
 
 /**
  * Allow formatting of strings.
@@ -30,51 +79,29 @@ String.prototype.format = function() {
     return str;
 };
 
-var rowTemplate =
-    '<tr class="data_row">' +
-        '<td class="sku">{0}</td>' +
-        '<td class="name">{1}</td>' +
-        '<td class="category">{2}</td>' +
-        '<td class="cost, currency">{3}</td>' +
-        '<td class="stock, number">{4}</td>' +
-    '</tr>',
-    searchTerm = '',
-    orderBy = 'sku',
-    sort = true;
-
 /**
  * Once HTML document is fully loaded, setup event handlers.
  */
 $(document).ready(function() {
-    var searchInput = $('input[type=search]'),
-        searchResultsTable = $('#search_results'),
-        headerRow = $('#header'),
-        skuHeader = $('#header th[class=sku]'),
-        nameHeader = $('#header th[class=name]'),
-        categoryHeader = $('#header th[class=category]'),
-        costHeader = $('#header th[class=cost]'),
-        stockHeader = $('#header th[class=stock]');
+    // Find elements with JQuery.
+    searchInput = $('input[type=search]');
+    searchResultsTable = $('#search_results');
+    headerRow = $('#header');
 
+    // Initialise search results table.
     manageGetParameters(searchInput);
+    getNewRows();   // When table in database is more full, remove this as will load entire table.
 
-    searchInput.keyup(function() {
-        searchTerm = searchInput.val();
-        if (searchTerm) {
-            updateURL();
-            getNewRows(searchResultsTable, headerRow);
-        }
-        else {
-            window.history.pushState('search', document.title, document.location.href.split('?')[0]);
-        }
-    });
-
-    skuHeader.click(changeSorting('sku'));
-    nameHeader.click(changeSorting('name'));
-    categoryHeader.click(changeSorting('category'));
-    costHeader.click(changeSorting('cost'));
-    stockHeader.click(changeSorting('stock'));
+    // Add listeners.
+    searchInput.keyup(search);
+    searchResultsTable.on('click', 'th', reOrderResults);
 });
 
+/**
+ * Setup
+ *
+ * @param searchInput
+ */
 function manageGetParameters(searchInput) {
 
     var temp = getQueryVariable('q');
@@ -92,24 +119,64 @@ function manageGetParameters(searchInput) {
     }
 }
 
-function updateURL() {
+/**
+ * Update URL with get parameters and update search results.
+ */
+function search() {
 
-    var newURL = '?q='+searchTerm+'&orderBy='+orderBy+'&sort='+(sort?'ASC':'DESC');
-    window.history.pushState('search', document.title, newURL);
+    searchTerm = searchInput.val();
+    if (searchTerm) {
+        updateURLParameters();
+        getNewRows();
+    }
+    else {
+        window.history.replaceState('search', document.title, document.location.href.split('?')[0]);
+        getNewRows();   // When table in database is more full, remove this as will load entire table.
+    }
 }
 
-function changeSorting(column) {
+/**
+ * Request results in new order based on class of clicked element.
+ */
+function reOrderResults() {
+
+    var column = $(this).attr('class'),
+        span = $(this).find('span');
     if (orderBy === column) {
         sort = !sort;
+        if (sort) {
+            span.attr('class', 'sorting_asc');
+        }
+        else {
+            span.attr('class', 'sorting_desc');
+        }
     }
     else {
         sort = true;
         orderBy = column;
+        span.attr('class', 'sorting_asc');
+        $(this).siblings().each(function() {
+            $(this).find('span').attr('class', 'sorting');
+        });
     }
-    updateURL();
+    updateURLParameters();
+    getNewRows();
 }
 
-function getNewRows(searchResultsTable, headerRow) {
+/**
+ * Update URL parameters.
+ */
+function updateURLParameters() {
+
+    var newURL = '?q='+searchTerm+'&orderBy='+orderBy+'&sort='+(sort?'ASC':'DESC');
+    window.history.replaceState('search', document.title, newURL);
+}
+
+/**
+ * Send get request to database for new rows.
+ * Parse JSON on success to add rows to table.
+ */
+function getNewRows() {
 
     $.ajax({
         type: 'GET',
@@ -125,11 +192,11 @@ function getNewRows(searchResultsTable, headerRow) {
                 searchResultsTable.html(headerRow);
                 $.each(data, function(index, product) {
                     searchResultsTable.append(rowTemplate.format(
-                        product['_sku'],
-                        product['_name'],
-                        product['_category'],
-                        product['_cost'],
-                        product['_stock']
+                        product[productVariables['sku']],
+                        product[productVariables['name']],
+                        product[productVariables['category']],
+                        product[productVariables['cost']],
+                        product[productVariables['stock']]
                     ));
                 });
             }

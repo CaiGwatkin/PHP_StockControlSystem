@@ -30,21 +30,9 @@ class ProductController extends Controller
     {
         if ($this->userIsLoggedIn()) {
             try {
-                if (isset($_GET['q'])) {
-                    $orderBy = $_GET['orderBy']??'sku';
-                    $sort = $_GET['sort']??'ASC';
-                    $productCollection = new ProductCollectionModel($_GET['q'], 'name', $orderBy, $sort);
-                    $products = $productCollection->getObjects();
-                    echo (new View('productSearch'))
-                        ->addData('products', $products)
-                        ->addData('scripts', array('productSearchHandler'))
-                        ->render();
-                }
-                else {
-                    echo (new View('productSearch'))
-                        ->addData('scripts', array('productSearchHandler'))
-                        ->render();
-                }
+                echo (new View('productSearch'))
+                    ->addData('scripts', array('productSearchHandler'))
+                    ->render();
             }
             catch (MySQLDatabaseException $ex) {
                 $this->errorAction(self::$INTERNAL_SERVER_ERROR_MESSAGE, $ex->getMessage());
@@ -71,12 +59,11 @@ class ProductController extends Controller
     /**
      * Update Search Results action
      *
-     * Handles GET from AJAX on search page.
+     * Handles GET from AJAX on search page. Sends back JSON encoded collection of products.
      */
     public function updateSearchResults()
     {
         try {
-            //echo json of products
             if (isset($_GET['q'])) {
                 error_log($_GET['q']);
                 header('Content-Type: application/json');

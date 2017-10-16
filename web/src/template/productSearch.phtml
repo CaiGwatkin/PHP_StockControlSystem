@@ -9,11 +9,26 @@
         <br>
         <table id="search_results">
             <tr id="header">
-                <th class="sku">SKU</th>
-                <th class="name">Name</th>
-                <th class="category">Category</th>
-                <th class="cost, currency">Cost</th>
-                <th class="stock, number">Stock Qty</th>
+                <th class="sku">
+                    SKU
+                    <span class="sorting_asc"></span>
+                </th>
+                <th class="name">
+                    Name
+                    <span class="sorting"></span>
+                </th>
+                <th class="category">
+                    Category
+                    <span class="sorting"></span>
+                </th>
+                <th class="cost">
+                    Cost
+                    <span class="sorting"></span>
+                </th>
+                <th class="stock">
+                    Stock Qty
+                    <span class="sorting"></span>
+                </th>
             </tr>
             <?php if ($products) {
                 foreach ($products as $product) { ?>
@@ -21,8 +36,8 @@
                     <td class="sku"><?= $product->getSKU() ?></td>
                     <td class="name"><?= $product->getName() ?></td>
                     <td class="category"><?= $product->getCategory() ?></td>
-                    <td class="cost, currency"><?= $product->getCostString() ?></td>
-                    <td class="stock, number"><?= $product->getStock() ?></td>
+                    <td class="cost currency"><?= $product->getCostString() ?></td>
+                    <td class="stock number"><?= $product->getStock() ?></td>
                 </tr>
                 <?php }
             } ?>
