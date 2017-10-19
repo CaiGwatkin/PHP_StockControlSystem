@@ -30,8 +30,9 @@ class ProductController extends Controller
     {
         if ($this->userIsLoggedIn()) {
             try {
-                echo (new View('productSearch'))->addData('pageName', 'Search')
-                    ->addData('scripts', array('productSearchHandler'))
+                echo (new View(PRODUCT_SEARCH_TEMPLATE))
+                    ->addData('pageName', PRODUCT_SEARCH_PAGE_NAME)
+                    ->addData('scripts', array(PRODUCT_SEARCH_RESULTS_SCRIPT))
                     ->render();
             }
             catch (MySQLDatabaseException $ex) {
@@ -52,7 +53,7 @@ class ProductController extends Controller
             }
         }
         else {
-            $this->redirectAction('/login');
+            $this->redirectAction(USER_LOGIN_PAGE);
         }
     }
 

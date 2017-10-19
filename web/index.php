@@ -44,6 +44,45 @@ define('DB_USER', 'root');
 define('DB_PASS', 'root');
 define('DB_NAME', 'cgwatkin_a3');
 
+/**
+ * Pages
+ */
+define('USER_LOGIN_PAGE', '/login');
+define('USER_REGISTER_PAGE', '/register');
+define('WELCOME_PAGE', '/');
+define('PRODUCT_SEARCH_PAGE', '/search');
+define('USER_LOGOUT_PAGE', '/logout');
+
+/**
+ * Template names
+ */
+define('USER_LOGIN_TEMPLATE', 'userLogin');
+define('USER_REGISTER_TEMPLATE', 'userRegister');
+define('WELCOME_TEMPLATE', 'welcome');
+define('PRODUCT_SEARCH_TEMPLATE', 'productSearch');
+define('ERROR_TEMPLATE', 'error');
+
+/**
+ * Page names
+ */
+define('USER_LOGIN_PAGE_NAME', 'Login');
+define('USER_REGISTER_PAGE_NAME', 'Register');
+define('WELCOME_PAGE_NAME', 'Welcome');
+define('PRODUCT_SEARCH_PAGE_NAME', 'Search');
+define('ERROR_PAGE_NAME', 'Error');
+
+/**
+ * JavaScript AJAX requests
+ */
+define('REGISTRATION_VERIFICATION_REQUEST', '/js/verifyRegistrationForm');
+define('PRODUCT_SEARCH_RESULTS_REQUEST', '/js/updateSearchResults');
+
+/**
+ * Scripts
+ */
+define('REGISTRATION_VERIFICATION_SCRIPT', 'verifyRegistrationForm');
+define('PRODUCT_SEARCH_RESULTS_SCRIPT', 'updateSearchResults');
+
 /***********************************************************************************************************************
  * MANAGE ROUTING
  */
@@ -51,7 +90,7 @@ $collection = new RouteCollection();
 
 $collection->attachRoute(
     new Route(
-        '/', array(
+        WELCOME_PAGE, array(
             '_controller' => 'cgwatkin\a3\controller\Controller::welcomeAction',
             'methods' => 'GET',
             'name' => 'welcome'
@@ -61,7 +100,7 @@ $collection->attachRoute(
 
 $collection->attachRoute(
     new Route(
-        '/login', array(
+        LOGIN_PAGE, array(
             '_controller' => 'cgwatkin\a3\controller\UserController::loginAction',
             'methods' => array('GET', 'POST'),
             'name' => 'userLogin'
@@ -71,7 +110,7 @@ $collection->attachRoute(
 
 $collection->attachRoute(
     new Route(
-        '/logout', array(
+        LOGOUT_PAGE, array(
             '_controller' => 'cgwatkin\a3\controller\UserController::logoutAction',
             'methods' => 'GET',
             'name' => 'userLogout'
@@ -81,7 +120,7 @@ $collection->attachRoute(
 
 $collection->attachRoute(
     new Route(
-        '/register', array(
+        REGISTER_PAGE, array(
             '_controller' => 'cgwatkin\a3\controller\UserController::registerAction',
             'methods' => array('GET', 'POST'),
             'name' => 'userRegister'
@@ -91,7 +130,7 @@ $collection->attachRoute(
 
 $collection->attachRoute(
     new Route(
-        '/js/verifyRegistrationForm', array(
+        REGISTRATION_VERIFICATION_REQUEST, array(
             '_controller' => 'cgwatkin\a3\controller\UserController::verifyRegistrationFormAction',
             'methods' => 'POST',
             'name' => 'userVerifyRegistrationForm'
@@ -101,7 +140,7 @@ $collection->attachRoute(
 
 $collection->attachRoute(
     new Route(
-        '/search', array(
+        SEARCH_PAGE, array(
             '_controller' => 'cgwatkin\a3\controller\ProductController::searchAction',
             'methods' => 'GET',
             'name' => 'productSearch'
@@ -111,7 +150,7 @@ $collection->attachRoute(
 
 $collection->attachRoute(
     new Route(
-        '/js/updateSearchResults', array(
+        PRODUCT_SEARCH_RESULTS_REQUEST, array(
             '_controller' => 'cgwatkin\a3\controller\ProductController::updateSearchResults',
             'methods' => 'GET',
             'name' => 'productUpdateSearchResults'

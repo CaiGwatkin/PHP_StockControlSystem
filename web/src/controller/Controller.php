@@ -43,11 +43,12 @@ class Controller
     {
         try {
             if ($this->userIsLoggedIn()) {
-                echo (new View('welcome'))->addData('pageName', 'Welcome')
+                echo (new View(WELCOME_TEMPLATE))
+                    ->addData('pageName', WELCOME_PAGE_NAME)
                     ->addData('name', $_SESSION['name'])
                     ->render();
             } else {
-                $this->redirectAction('/login');
+                $this->redirectAction(USER_LOGIN_PAGE);
             }
         }
         catch (LoadTemplateException $ex) {
@@ -68,7 +69,8 @@ class Controller
     {
         try {
             error_log($error.': '.$message);
-            echo (new View('error'))->addData('pageName', 'Error')
+            echo (new View(ERROR_TEMPLATE))
+                ->addData('pageName', ERROR_PAGE_NAME)
                 ->addData('error', $error)
                 ->addData('errorMessage', $message)
                 ->render();

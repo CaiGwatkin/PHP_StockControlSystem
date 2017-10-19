@@ -27,7 +27,11 @@ class UserController extends Controller
     public function loginAction()
     {
         try {
-            $view = (new View('userLogin'))->addData('pageName', 'Login');
+            if ($this->userIsLoggedIn()) {
+                $this->redirectAction(WELCOME_PAGE);
+            }
+            $view = (new View(USER_LOGIN_TEMPLATE))
+                ->addData('pageName', USER_LOGIN_PAGE_NAME);
             if (isset($_POST['login'])) {
                 $username = $_POST['username'];
                 $password = $_POST['password'];
@@ -43,10 +47,7 @@ class UserController extends Controller
                 $_SESSION['name'] = $user->getName();
                 $_SESSION['username'] = $user->getUsername();
                 $_SESSION['userID'] = $user->getID();
-                $this->redirectAction('/');
-            }
-            else if ($this->userIsLoggedIn()) {
-                $this->redirectAction('/');
+                $this->redirectAction(WELCOME_PAGE);
             }
             else {
                 echo $view->render();
@@ -79,7 +80,7 @@ class UserController extends Controller
     {
         session_start();
         session_destroy();
-        $this->redirectAction('/login');
+        $this->redirectAction(USER_LOGIN_PAGE);
     }
 
     /**
@@ -89,7 +90,9 @@ class UserController extends Controller
     {
         try {
             if (!$this->userIsLoggedIn()) {
-                $view = (new View('userRegister'))->addData('pageName', 'Register');
+                $view = (new View(USER_REGISTER_TEMPLATE))
+                    ->addData('pageName', USER_REGISTER_PAGE_NAME)
+                    ->addData('scripts', array(REGISTRATION_VERIFICATION_SCRIPT));
                 if (isset($_POST['register'])) {
                     $name = $_POST['name'];
                     $username = $_POST['username'];
@@ -100,7 +103,6 @@ class UserController extends Controller
                             ->addData('name', $name)
                             ->addData('username', $username)
                             ->addData('password', $password)
-                            ->addData('scripts', array('userRegisterFormHandler'))
                             ->render();
                         return;
                     }
@@ -116,14 +118,13 @@ class UserController extends Controller
                     $_SESSION['name'] = $user->getName();
                     $_SESSION['username'] = $user->getUsername();
                     $_SESSION['userID'] = $user->getID();
-                    $this->redirectAction('/');
+                    $this->redirectAction(WELCOME_PAGE);
                 } else {
-                    echo $view->addData('scripts', array('userRegisterFormHandler'))
-                        ->render();
+                    echo $view->render();
                 }
             }
             else {
-                $this->redirectAction('/');
+                $this->redirectAction(USER_LOGIN_PAGE);
             }
         }
         catch (MySQLDatabaseException $ex) {
