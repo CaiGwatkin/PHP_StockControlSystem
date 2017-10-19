@@ -5,40 +5,6 @@ Author: C. Gwatkin
 * [GitHub](https://github.com/CaiGwatkin)
 * [LinkedIn](https://www.linkedin.com/in/caigwatkin/)
 
-## Specifications
-
-Application for Toolshed Inc.
-
-The application is a simple look-up of products in the backend stock control system.
-
-The system consists of 4 parts: Login, Registration, Homepage/Welcome, and Search screens.
-
-## Design choices
-
-At the backend, the server uses PHP in an MVC framework. This provides reasonable flexibility and expandability 
-whilst being easy to read and maintain.
-
-At the frontend, the web app uses JS, AJAX, and JQuery to perform client-side validation and data manipulation. This 
-allows for dynamic and responsive design which the user can interact with easily. Pages don't reload as often, 
-offering a more seamless user experience.
-
-## Database schema and relations
-
-The MySQL database consists of two relations:
-
-1. user
-    * id - User ID number
-    * username - Username
-    * pwd - User password
-    * name - User's name
-1. product
-    * id - Product ID number
-    * sku - Stop Keeping Unit (SKU) identifier
-    * name - Product name
-    * cost - Product cost
-    * category - Product category
-    * stock - Stock quantity
-
 ## Installation instructions
 
 ### Requirements
@@ -52,14 +18,14 @@ Docker Toolbox
     1. Enter command `docker-compose up`
     1. Wait for packages to be installed and containers to run
 1. For web-app use
-    1. Navigate to `192.168.99.100:8000`
+    1. For URL: on Windows with Docker, use `192.168.99.100:8000`; on Linux/Mac, use `localhost:8000`
     1. Log in with username 'TheToolman' and password 'TheToolman'
 1. For database view
-    1. Navigate to `192.168.99.100:8888`
+    1. Use port `:8888`
 
 ## Instructions for end-user
 
-1. Navigate to webpage
+1. Navigate to webpage (`192.168.99.100:8000` or `localhost:8000`)
 1. Log in:
     1. If it's your first time, click the "Register" button:
         1. Type your details into the fields shown
