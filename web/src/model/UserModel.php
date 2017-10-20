@@ -105,55 +105,6 @@ class UserModel extends Model
 
         return $this;
     }
-    
-    /**
-     * Checks that login details are valid.
-     *
-     * @param string $username The username for the user to be logged in.
-     * @param string $password The password.
-     *
-     * @return $this UserModel
-     * @throws MySQLIStatementException
-     * @throws MySQLQueryException
-     */
-    public function checkLogin(string $username, string $password)
-    {
-        if (!($stmt = $this->db->prepare(
-            'SELECT id
-            FROM user
-            WHERE username = ?'
-        ))) {
-            throw new MySQLIStatementException('Error in prepare() in UserModel::checkLogin');
-        }
-        if (!($stmt->bind_param('s', $username))) {
-            throw new MySQLIStatementException('Error in bind_param() in UserModel::checkLogin');
-        }
-        if (!$stmt->execute()) {
-            throw new MySQLIStatementException('Error in execute() in UserModel::checkLogin');
-        }
-        if (!($result = $stmt->get_result())) {
-            throw new MySQLIStatementException('Error in get_result() in UserModel::checkLogin');
-        }
-        if ($result->num_rows == 0) {
-            return null;
-        }
-        $result = $result->fetch_assoc();
-        try {
-            $this->load($result['id']);
-        }
-        catch (MySQLIStatementException $ex) {
-            throw $ex;
-        }
-        catch (MySQLQueryException $ex) {
-            throw $ex;
-        }
-        if (!password_verify($this->_id.$password, $this->_password)) {
-            return null;
-        }
-        else {
-            return $this;
-        }
-    }
 
     /**
      * Loads user information from the database
@@ -269,6 +220,55 @@ class UserModel extends Model
             throw new MySQLQueryException('Error in execute() in UserModel::updatePassword');
         }
         return $this;
+    }
+    
+    /**
+     * Checks that login details are valid.
+     *
+     * @param string $username The username for the user to be logged in.
+     * @param string $password The password.
+     *
+     * @return $this UserModel
+     * @throws MySQLIStatementException
+     * @throws MySQLQueryException
+     */
+    public function checkLogin(string $username, string $password)
+    {
+        if (!($stmt = $this->db->prepare(
+            'SELECT id
+            FROM user
+            WHERE username = ?'
+        ))) {
+            throw new MySQLIStatementException('Error in prepare() in UserModel::checkLogin');
+        }
+        if (!($stmt->bind_param('s', $username))) {
+            throw new MySQLIStatementException('Error in bind_param() in UserModel::checkLogin');
+        }
+        if (!$stmt->execute()) {
+            throw new MySQLIStatementException('Error in execute() in UserModel::checkLogin');
+        }
+        if (!($result = $stmt->get_result())) {
+            throw new MySQLIStatementException('Error in get_result() in UserModel::checkLogin');
+        }
+        if ($result->num_rows == 0) {
+            return null;
+        }
+        $result = $result->fetch_assoc();
+        try {
+            $this->load($result['id']);
+        }
+        catch (MySQLIStatementException $ex) {
+            throw $ex;
+        }
+        catch (MySQLQueryException $ex) {
+            throw $ex;
+        }
+        if (!password_verify($this->_id.$password, $this->_password)) {
+            return null;
+        }
+        else {
+            return $this;
+        }
     }
 
     /**

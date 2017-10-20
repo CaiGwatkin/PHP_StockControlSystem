@@ -221,7 +221,7 @@ class ProductModel extends Model
      *
      * @return array
      */
-    public function exposeVars()
+    public function exposeVariables()
     {
         return get_object_vars($this);
     }

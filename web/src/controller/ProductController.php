@@ -28,32 +28,32 @@ class ProductController extends Controller
      */
     public function searchAction()
     {
-        if ($this->userIsLoggedIn()) {
-            try {
+        try {
+            if ($this->userIsLoggedIn()) {
                 echo (new View(PRODUCT_SEARCH_TEMPLATE))
                     ->addData('pageName', PRODUCT_SEARCH_PAGE_NAME)
                     ->addData('scripts', array(PRODUCT_SEARCH_RESULTS_SCRIPT))
                     ->render();
             }
-            catch (MySQLDatabaseException $ex) {
-                $this->errorAction(self::$INTERNAL_SERVER_ERROR_MESSAGE, $ex->getMessage());
-                return;
-            }
-            catch (MySQLIStatementException $ex) {
-                $this->errorAction(self::$INTERNAL_SERVER_ERROR_MESSAGE, 'Invalid parameters in URL');
-                return;
-            }
-            catch (MySQLQueryException $ex) {
-                $this->errorAction(self::$INTERNAL_SERVER_ERROR_MESSAGE, $ex->getMessage());
-                return;
-            }
-            catch (LoadTemplateException $ex) {
-                $this->errorAction(self::$INTERNAL_SERVER_ERROR_MESSAGE, $ex->getMessage());
-                return;
+            else {
+                $this->redirectAction(USER_LOGIN_PAGE);
             }
         }
-        else {
-            $this->redirectAction(USER_LOGIN_PAGE);
+        catch (MySQLDatabaseException $ex) {
+            $this->errorAction(self::$INTERNAL_SERVER_ERROR_MESSAGE, $ex->getMessage());
+            return;
+        }
+        catch (MySQLIStatementException $ex) {
+            $this->errorAction(self::$INTERNAL_SERVER_ERROR_MESSAGE, 'Invalid parameters in URL');
+            return;
+        }
+        catch (MySQLQueryException $ex) {
+            $this->errorAction(self::$INTERNAL_SERVER_ERROR_MESSAGE, $ex->getMessage());
+            return;
+        }
+        catch (LoadTemplateException $ex) {
+            $this->errorAction(self::$INTERNAL_SERVER_ERROR_MESSAGE, $ex->getMessage());
+            return;
         }
     }
 
@@ -74,7 +74,7 @@ class ProductController extends Controller
                 $products = $productCollection->getObjects();
                 $objectVarArray = array();
                 foreach($products as $product) {
-                    array_push($objectVarArray, $product->exposeVars());
+                    array_push($objectVarArray, $product->exposeVariables());
                 }
                 echo json_encode($objectVarArray);
             }
