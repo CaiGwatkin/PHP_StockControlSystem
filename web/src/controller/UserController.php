@@ -186,7 +186,7 @@ class UserController extends Controller
                 return 'Invalid username: username already exists';
             }
             if (!$this->passwordValid($password)) {
-                return 'Invalid password: password must be between 7 and 15 (exclusive) alphanumeric characters and '.
+                return 'Invalid password: password must be between 7 and 15 alphanumeric characters and '.
                     'contain at least one uppercase letter (no special characters allowed)';
             }
             if (!$this->passwordsMatch($password, $passwordRepeat)) {
@@ -242,8 +242,7 @@ class UserController extends Controller
      */
     private function passwordValid($password)
     {
-        $length = strlen($password);
-        return $length > 7 && $length < 15 && preg_match('/[A-Z]/', $password) && ctype_alnum($password);
+        return preg_match('/^(?=.*[A-Z])(^[a-zA-Z0-9]{7,15}$)/', $password);
     }
 
     /**

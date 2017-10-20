@@ -145,13 +145,12 @@ function checkUsernameUnique() {
 function checkPasswordValid() {
 
     var password = passwordInput.val(),
-        length = password.length,
         message;
-    if (length > 7 && length < 15 && !!password.match(/^(?=.*[A-Z])/) && password.isAlphanumeric()) {
+    if (!!password.match(/^(?=.*[A-Z])(^[a-zA-Z0-9]{7,15}$)/)) {
         message = "";
     }
     else {
-        message = "Invalid password: password must be between 7 and 15 (exclusive) alphanumeric characters and "+
+        message = "Invalid password: password must be between 7 and 15 alphanumeric characters and "+
             "contain at least one uppercase letter (no special characters allowed)";
     }
     return message;
